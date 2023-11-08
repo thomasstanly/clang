@@ -1,0 +1,141 @@
+﻿{% extends 'user/base.html' %}
+{% load static %}
+{% block title %}Clang Mount{% endblock title %}
+{% block content %}
+  <main class="main">
+    <section class="home-slider position-relative">
+      <div class="hero-slider-1 dot-style-1 dot-style-1-position-1">
+        <div class="single-hero-slider single-animation-wrap">
+          <div class="container-fliud">
+            <div id="carouselExampleDark" class="carousel carousel-dark slide">
+              <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+              </div>
+              <div class="carousel-inner">
+                <div class="carousel-item active" data-bs-interval="10000">
+                  <img src="{% static 'user_assets/imgs/slider/speaker-system.png' %}" class="align-center d-block w-100" alt="..." />
+                  <div class="carousel-caption d-none d-md-block">
+                    <h4 class="animated">Trade-in offer</h4>
+                    <h2 class="animated fw-900">Supper value deals</h2>
+                    <h1 class="animated fw-900 text-brand">On all products</h1>
+                    <p class="animated">Save more with coupons & up to 70% off</p>
+                    <a class="animated btn btn-brush btn-brush-3" href="{% url "home" %}">Shop Now</a>
+                  </div>
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slider-arrow hero-slider-1-arrow"></div>
+    </section>
+    <section class="featured section-padding position-relative">
+      <div class="container-fluid">
+        <div class="row">
+          <h3 class="section-title mb-20"><span>Popular</span> Categories</h3>
+          <div class="col-lg-4 col-md-4 mb-md-3 mb-lg-0">
+            <div class="banner-features wow fadeIn animated hover-up">
+              <img src="{% static 'user_assets/imgs/theme/icons/feature-1.png' %}" alt="" />
+              <h4 class="bg-1">bluetooth speaker</h4>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 mb-md-3 mb-lg-0">
+            <div class="banner-features wow fadeIn animated hover-up">
+              <img src="{% static 'user_assets/imgs/theme/icons/feature-2.png' %}" alt="" />
+              <h4 class="bg-3">soundbar</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="banners mt-15 mb-15">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-4 col-md-6">
+            <div class="banner-img wow fadeIn animated">
+              <img src="{% static 'user_assets/imgs/banner/banner-1.webp' %}" alt="" />
+              <div class="banner-text">
+                <span>Smart Offer</span>
+                <h4>Save 20% on <br />Woman Bag</h4>
+                <a href="shop-grid-right.html">Shop Now <i class="fi-rs-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="banner-img wow fadeIn animated">
+              <img src="{% static 'user_assets/imgs/banner/banner-2.webp' %}" alt="" />
+              <div class="banner-text">
+                <span>Sale off</span>
+                <h4>Great Summer <br />Collection</h4>
+                <a href="shop-grid-right.html">Shop Now <i class="fi-rs-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 d-md-none d-lg-flex">
+            <div class="banner-img wow fadeIn animated mb-sm-0">
+              <img src="{% static 'user_assets/imgs/banner/banner-3.webp' %}" alt="" />
+              <div class="banner-text">
+                <span>New Arrivals</span>
+                <h4>Shop Today’s <br />Deals & Offers</h4>
+                <a href="shop-grid-right.html">Shop Now <i class="fi-rs-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="banner-2 section-padding pb-0">
+      <div class="container-fluid">
+        <div class="row banner-img   wow fadeIn animated f-none">
+          <img src="{% static 'user_assets/imgs/banner/banner-4.png' %}" alt="" />
+          <div class="banner-text d-md-block d-none">
+            <h4 class="mb-15 mt-40 text-brand">Repair Services</h4>
+            <h1 class="fw-600 mb-20">We're an Apple <br />Authorised Service Provider</h1>
+            <a href="shop-grid-right.html" class="btn">Learn More <i class="fi-rs-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section-padding">
+      <div class="container-fluid">
+        <h3 class="section-title mt-30 mb-50 wow fadeIn animated"><span>Featured</span> Brands</h3>
+        <div class="carausel-6-columns-cover position-relative wow fadeIn animated">
+          <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-3-arrows"></div>
+          <div class="carausel-6-columns" id="carausel-6-columns-3">
+            <div class=" brand-logo">
+              <img class="img-grey-hover" src="{% static 'user_assets/imgs/banner/JBL.png' %}" alt="" />
+            </div>
+            <div class="brand-logo">
+              <img class="img-grey-hover" src="{% static 'user_assets/imgs/banner/Sony.png' %}" alt="" />
+            </div>
+            <div class="brand-logo">
+              <img class="mt-15 img-grey-hover" src="{% static 'user_assets/imgs/banner/marshall.png' %}" alt="" />
+            </div>
+            <div class="brand-logo">
+              <img class="mt-5 img-grey-hover" src="{% static 'user_assets/imgs/banner/boat.png' %}" alt="" />
+            </div>
+            <div class="brand-logo">
+              <img class="mt-25 img-grey-hover" src="{% static 'user_assets/imgs/banner/Bose.png' %}" alt="" />
+            </div>
+            <div class="brand-logo">
+              <img class="mt-25 img-grey-hover" src="{% static 'user_assets/imgs/banner/Blaupunkt.png' %}" alt="" />
+            </div>
+            <div class="brand-logo">
+              <img class="img-grey-hover" src="{% static 'user_assets/imgs/banner/Zebronics.png' %}" alt="" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}
