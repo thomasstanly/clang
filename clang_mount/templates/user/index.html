@@ -1,6 +1,8 @@
 ﻿{% extends 'user/base.html' %}
 {% load static %}
-{% block title %}Clang Mount{% endblock title %}
+{% block title %}
+  Clang Mount
+{% endblock %}
 {% block content %}
   <main class="main">
     <section class="home-slider position-relative">
@@ -21,7 +23,7 @@
                     <h2 class="animated fw-900">Supper value deals</h2>
                     <h1 class="animated fw-900 text-brand">On all products</h1>
                     <p class="animated">Save more with coupons & up to 70% off</p>
-                    <a class="animated btn btn-brush btn-brush-3" href="{% url "home" %}">Shop Now</a>
+                    <a class="animated btn btn-brush btn-brush-3" href="{% url 'home' %}">Shop Now</a>
                   </div>
                 </div>
               </div>
@@ -96,7 +98,7 @@
     </section>
     <section class="banner-2 section-padding pb-0">
       <div class="container-fluid">
-        <div class="row banner-img   wow fadeIn animated f-none">
+        <div class="row banner-img wow fadeIn animated f-none">
           <img src="{% static 'user_assets/imgs/banner/banner-4.png' %}" alt="" />
           <div class="banner-text d-md-block d-none">
             <h4 class="mb-15 mt-40 text-brand">Repair Services</h4>
@@ -112,7 +114,7 @@
         <div class="carausel-6-columns-cover position-relative wow fadeIn animated">
           <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-3-arrows"></div>
           <div class="carausel-6-columns" id="carausel-6-columns-3">
-            <div class=" brand-logo">
+            <div class="brand-logo">
               <img class="img-grey-hover" src="{% static 'user_assets/imgs/banner/JBL.png' %}" alt="" />
             </div>
             <div class="brand-logo">

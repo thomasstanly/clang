@@ -8,7 +8,7 @@ from django.contrib import messages
 def login(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            return redirect(dashboard)
+            return redirect('dashboard')
         return redirect(login)
     if request.method == 'POST':
         email = request.POST['email']
@@ -20,7 +20,7 @@ def login(request):
         else:
             messages.warning(request,'wrong credentials !')
             return redirect(login)
-    return render(request,'admin/page-account-login.html')
+    return render(request,'cus_admin/page-account-login.html')
 def logout(request):
     auth_logout(request)
     return redirect(login)
@@ -28,52 +28,52 @@ cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def dashboard(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            return render(request,'admin/index.html')
+            return render(request,'cus_admin/index.html')
     return redirect(login)
 def product(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'admin/page-products-list.html')
+        return render(request,'cus_admin/page-products-list.html')
     else:
         return redirect(login)
 def add_product(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'admin/page-form-product-3.html')
+        return render(request,'cus_admin/page-form-product-3.html')
     else:
          return redirect(login)
 def product_edit(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'admin/page-product-detail.html')
+        return render(request,'cus_admin/page-product-detail.html')
     else:
          return redirect(login)
 def brands(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'admin/page-brands.html')
+        return render(request,'cus_admin/page-brands.html')
     else:
          return redirect(login)
         
 def categories(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'admin/page-categories.html')
+        return render(request,'cus_admin/page-categories.html')
     else:
          return redirect(login)
 def order(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'admin/page-orders-1.html')
+        return render(request,'cus_admin/page-orders-1.html')
     else:
          return redirect(login)
 def order_edit(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'admin/page-orders-detail.html')
+        return render(request,'cus_admin/page-orders-detail.html')
     else:
          return redirect(login)
 def customer(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'admin/page-customers-list.html')
+        return render(request,'cus_admin/page-customers-list.html')
     else:
          return redirect(login)
 def customer_edit(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'admin/page-customers-detail.html')
+        return render(request,'cus_admin/page-customers-detail.html')
     else:
          return redirect(login)
 

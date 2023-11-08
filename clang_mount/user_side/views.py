@@ -57,19 +57,18 @@ def login(request):
 
 def logout(request):
     user_logout(request)
-    return redirect(login)
+    return redirect(dashboard)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def index(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
             return redirect(admin_login)
-        return render(request,'user/index.html')
-    return redirect(login)
+    return render(request,'user/index.html')
 
 def home(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
             return redirect(admin_login)
-        return render(request,'user/shop-list-left.html')
-    return redirect(login)
+    return render(request,'user/shop-list-left.html')
+    
