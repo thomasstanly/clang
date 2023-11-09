@@ -29,7 +29,7 @@
           {% endfor %}
           <div class="card-body">
             <h4 class="card-title mb-4">Log in</h4>
-            <form action="{% url 'admin_login' %}" method="POST">
+            <form action="{% url 'admin_app:admin_login' %}" method="POST">
               {% csrf_token %}
               <div class="mb-3">
                 <input name="email" class="form-control" placeholder="email" type="text" />

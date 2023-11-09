@@ -24,7 +24,7 @@
     <div class="screen-overlay"></div>
   <aside class="navbar-aside" id="offcanvas_aside">
     <div class="aside-top">
-      <a href="{% url "dashboard" %}" class="brand-wrap"><img class="logo" src="{% static 'admin_assets/imgs/theme/logo.png' %}" alt="Evara Dashboard" /></a>
+      <a href="{% url "admin_app:dashboard" %}" class="brand-wrap"><img class="logo" src="{% static 'admin_assets/imgs/theme/logo.png' %}" alt="Evara Dashboard" /></a>
       <div>
         <button class="btn btn-icon btn-aside-minimize"><i class="text-muted material-icons md-menu_open"></i></button>
       </div>
@@ -32,19 +32,19 @@
     <nav>
       <ul class="menu-aside">
         <li class="menu-item active">
-          <a class="menu-link" href="{% url "dashboard" %}">
+          <a class="menu-link" href="{% url "admin_app:dashboard" %}">
             <i class="icon material-icons md-home"></i>
             <span class="text">Dashboard</span>
           </a>
         </li>
         <li class="menu-item">
-          <a class="menu-link" href="{% url "admin_categories" %}">
+          <a class="menu-link" href="{% url "admin_app:admin_categories" %}">
             <i class="icon material-icons md-add_box"></i>
             <span class="text">Categories</span>
           </a>
         </li>
         <li class="menu-item ">
-          <a class="menu-link" href="{% url "product" %}">
+          <a class="menu-link" href="{% url "admin_app:product" %}">
             <i class="icon material-icons md-shopping_bag"></i>
             <span class="text">Products</span>
           </a>
@@ -56,7 +56,7 @@
           </div> {% endcomment %}
         </li>
         <li class="menu-item ">
-          <a class="menu-link" href="{% url "order" %}">
+          <a class="menu-link" href="{% url "admin_app:order" %}">
             <i class="icon material-icons md-shopping_cart"></i>
             <span class="text">Orders</span>
           </a>
@@ -84,10 +84,10 @@
           </a>
         </li>
         <li class="menu-item">
-          <a class="menu-link" href="{% url "customer" %}">
+          <a class="menu-link" href="{% url "customer_app:customer" %}">
             <i class="icon material-icons md-person"></i>
             <span class="text">Customer</span>
-          </a>
+          </a>  
         </li>
         <li class="menu-item">
           <a class="menu-link" disabled href="#">

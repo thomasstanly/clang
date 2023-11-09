@@ -1,4 +1,5 @@
 {% extends "cus_admin/base.html" %}
+{% block title %}customer details{% endblock title %}
 {% load static %}
 {% block content %}
     <main class="main-wrap">
@@ -12,20 +13,20 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-xl col-lg flex-grow-0" style="flex-basis:230px">
-                            <div class="img-thumbnail shadow w-100 bg-white position-relative text-center" style="height:190px; width:200px; margin-top:-120px">
-                                <img src="assets/imgs/brands/brand-3.jpg" class="center-xy img-fluid" alt="Logo Brand">
-                            </div>
-                        </div> <!--  col.// -->
+                        
                         <div class="col-xl col-lg">
-                            <h3>Cocorico sports shop</h3>
-                            <p>3891 Ranchview Dr. Richardson, California 62639</p>
+                            <h3>{{customer.user_name}}</h3>
+                            <p>{{customer.email}}</p>
                         </div> <!--  col.// -->
                         <div class="col-xl-4 text-md-end">
-                            <select class="form-select w-auto d-inline-block">
-                                <option>Active</option>
-                                <option>Inactive</option>
-                            </select>
+                            <form action="{% url "customer_app:status" id=customer.id %}">
+                                {% csrf_token %}
+                                <select class="form-select w-auto d-inline-block">
+                                    <option value="True">{% if customer.is_active %}Active {% else %}Inactive{% endif %}</option>
+                                    <option value="False">{% if customer.is_active %}Inactive {% else %}Active{% endif %}</option>
+                                </select>
+                                <button class="badge rounded-pill alert-danger">submit</button>
+                            </form>
                         </div> <!--  col.// -->
                     </div> <!-- card-body.// -->
                     <hr class="my-4">

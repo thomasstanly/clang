@@ -5,7 +5,6 @@ from django.views.decorators.cache import cache_control
 from admin_side.views import login as admin_login
 from django.contrib import messages
 from admin_side.models import User
-from admin_side.views import dashboard
 import random
 
 
@@ -14,7 +13,7 @@ import random
 def signup(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            return redirect(dashboard)
+            return redirect('admin_app:dashboard')
         return redirect('user_app:index')
     if request.method == "POST":
         user = request.POST["username"]
@@ -66,7 +65,7 @@ def otp_verification(request):
 def otp(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            return redirect(dashboard)
+            return redirect('admin_app:dashboard')
         return redirect('user_app:index')
     user = request.session.get('username')
     email = request.session.get('email')
@@ -83,17 +82,23 @@ def otp(request):
 def login(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            return redirect(admin_login)
+            return redirect('admin_app:admin_login')
         return redirect('user_app:index')
     if request.method == "POST":
         email = request.POST["email"]
         passw = request.POST["password"]
-        user_details = authenticate(email = email,password = passw)
-        if user_details is not None and user_details.is_superuser is False:
-            user_login(request,user_details)
-            return redirect('user_app:index')
+        customer = User.objects.get(email=email)
+        print(customer)
+        if customer.is_active == True:
+            user_details = authenticate(email = email,password = passw)
+            if user_details is not None and user_details.is_superuser is False:
+                user_login(request,user_details)
+                return redirect('user_app:index')
+            else:
+                messages.warning(request,"invalid credentials")
+                return redirect('user_app:user_login')
         else:
-            messages.warning(request,"invalid credentials")
+            messages.warning(request,"Sorry your are BLOCKED")
             return redirect('user_app:user_login')
     return render(request,'user/page-login.html')
 
@@ -105,7 +110,7 @@ def logout(request):
 def index(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            return redirect(admin_login)
+            return redirect('admin_app:admin_login')
         return render(request,'user/index.html')
     return render(request,'user/index.html')
 
@@ -113,6 +118,6 @@ def index(request):
 def home(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            return redirect(admin_login)
+            return redirect('admin_app:admin_login')
         return render(request,'user/shop-list-left.html')
     return render(request,'user/index.html')
