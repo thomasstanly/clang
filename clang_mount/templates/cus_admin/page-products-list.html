@@ -12,7 +12,7 @@
                 <div>
                     <a href="#" class="btn btn-light rounded font-md">Export</a>
                     <a href="#" class="btn btn-light rounded  font-md">Import</a>
-                    <a href="{% url "add_product" %}" class="btn btn-primary btn-sm rounded">New product</a>
+                    <a href="{% url "product_app:add_product" %}" class="btn btn-primary btn-sm rounded">New product</a>
                 </div>
             </div>
             <div class="card mb-4">
@@ -70,7 +70,7 @@
                                 <span>02.11.2021</span>
                             </div>
                             <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                                <a href="{% url "product_edit" %}" class="btn btn-sm font-sm rounded btn-brand">
+                                <a href="{% url "product_app:product_edit" %}" class="btn btn-sm font-sm rounded btn-brand">
                                     <i class="material-icons md-edit"></i> Edit
                                 </a>
                                 <a href="#" class="btn btn-sm font-sm btn-light rounded">
@@ -399,6 +399,7 @@
                     </ul>
                 </nav>
             </div>
+            
         </section> <!-- content-main end// -->
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">

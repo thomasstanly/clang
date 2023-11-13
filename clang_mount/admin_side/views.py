@@ -21,6 +21,7 @@ def login(request):
             messages.warning(request,'wrong credentials !')
             return redirect('admin_app:admin_login')
     return render(request,'cus_admin/page-account-login.html')
+
 def logout(request):
     auth_logout(request)
     return redirect('admin_app:admin_login')
@@ -30,32 +31,13 @@ def dashboard(request):
         if request.user.is_superuser:
             return render(request,'cus_admin/index.html')
     return redirect('admin_app:admin_login')
-def product(request):
-    if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'cus_admin/page-products-list.html')
-    else:
-        return redirect('admin_app:admin_login')
-def add_product(request):
-    if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'cus_admin/page-form-product-3.html')
-    else:
-         return redirect('admin_app:admin_login')
-def product_edit(request):
-    if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'cus_admin/page-product-detail.html')
-    else:
-         return redirect('admin_app:admin_login')
+
 def brands(request):
     if request.user.is_authenticated and request.user.is_superuser:
         return render(request,'cus_admin/page-brands.html')
     else:
          return redirect('admin_app:admin_login')
         
-def categories(request):
-    if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'cus_admin/page-categories.html')
-    else:
-         return redirect('admin_app:admin_login')
 def order(request):
     if request.user.is_authenticated and request.user.is_superuser:
         return render(request,'cus_admin/page-orders-1.html')
