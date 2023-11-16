@@ -1,0 +1,97 @@
+{% extends 'cus_admin/base.html' %}
+{% load static %}
+{% block content %}
+  <main class="main-wrap">
+    {% include 'cus_admin/header.html' %}
+    <section class="content-main">
+      <form action="{% url "product_app:variant_add" slug=product.product_slug %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row justify-content-center">
+          <div class="col-9">
+            <div class="content-header">
+              <h2 class="content-title">Add New Variant</h2>
+              <div>
+                <button type="submit" class="btn btn-md rounded font-sm hover-up">Create</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="mb-4">
+                  <label for="product_title" class="form-label">Product Name</label>
+                  {{form.product_name}}
+                {{form.prouct_name.errors}}
+                <div class=" error-msg">{{form.product_name.errors}}</div>
+              </div>
+              <div class="row gx-3">
+                <div class="col-md-4 mb-3">
+                  {% for attribute_name, attribute_values in attri_data.items %}
+                  <label class="form-label">{{ attribute_name }}</label>
+                  <select name="attri_values_{{forloop.counter}}" class="form-control">
+                    <option value="None">----------</option>
+                    {% for value in attribute_values %}
+                    <option class="text-primary" value="{{ value.id }}">{{ value.attribute_value }}</option>
+                    {% endfor %}
+                  </select>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div> <!-- card end// -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div>
+                <label class="form-label">Description</label>
+                {{form.description}}
+                {{form.description.errors}}
+              </div>
+            </div>
+          </div> <!-- card end// -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div>
+                <label class="form-label">Images</label>
+                {{form.thumbnail_image}}
+                <div class=" error-msg">{{form.thumbnail_image.errors}}</div>
+              </div>
+            </div>
+          </div> <!-- card end// -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div>
+                <label class="form-label">Multiple Images</label>
+                <input name="multiple_image" class="form-control" type="file" multiple/>
+              </div>
+            </div>
+          </div> <!-- card end// -->
+        </div>
+        <div class="col-lg-3">
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="mb-4">
+                <label class="form-label">SKU</label>
+                {{ form.sku_id }}
+                {{form.sku_id.errors}}
+              </div>
+              <div class="mb-4">
+                <label class="form-label">Price</label>
+                {{ form.price }}
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Dis. Price</label>
+                  {{ form.discount_price }}
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Stock</label>
+                  {{ form.stock }}
+                </div>
+              </div>
+            </div> <!-- card end// -->
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+  {% endblock %}
+  

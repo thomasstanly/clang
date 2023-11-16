@@ -20,28 +20,30 @@
         <div class="card col-6 pt-15">
           <form action="{% url 'product_app:add_attribute_value' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <label for="form-control mt-45">Create values for {{attr.atrribute_name}}</label>
             {{attr_form.as_p}}
             <button type="submit" class="btn btn-primary my-3">add</button>
           </form>
         </div>
         <div class="card col-4">
           <div class="table-responsive">
-            <table class="table table-hover mt-10">
-              
-               <tr>
-                <td><a href="#">{{ Attribute.atrribute_name }}</a></td>
-                <td>
-                  <form action="#" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="badge rounded-pill alert-danger border-none">{% if Attribute.is_active %}Active {% else %}Inactive{% endif %}</button>
-                  </form>
-                </td>
-                <td>
-                  <a href="#" class="btn btn-sm font-sm btn-light rounded"><i class="material-icons md-delete_forever al"></i> Delete</a>
-                </td>
-               </tr>
-              
+            <table class="table mt-10">
+              <tr class="from-control table-primary rounded ">
+                <th class="text-center">Attribute</th>
+                <th class="text-center">Value</th>
+                <th class="text-center">Status</th>
+              </tr>
+              {% for attribute in attr %}
+                <tr class="itemlist">
+                  <td class="text-center"><a href="#">{{ attribute.attribute_id }}</a></td>
+                  <td class="text-center"><a href="#">{{ attribute.attribute_value }}</a></td>
+                  <td class="text-center">
+                    <form action="{% url "product_app:attribute_value_status" id=attribute.id %}" method="POST">
+                      {% csrf_token %}
+                      <button type="submit" class="badge rounded-pill alert-danger border-none">{% if attribute.is_active %}Active {% else %}Inactive{% endif %}</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}                         
             </table>
           </div>
         </div>

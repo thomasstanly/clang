@@ -9,7 +9,6 @@ def login(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
             return redirect('admin_app:dashboard')
-        return redirect(login)
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']

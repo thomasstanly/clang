@@ -9,6 +9,9 @@ class Brand(models.Model):
     brand_image = models.ImageField(upload_to='brand/',default="")
     is_active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.Brand_name
+
 class Product(models.Model):
     product_name = models.CharField(max_length=60)
     category_id = models.ForeignKey(Categories,on_delete=models.SET_NULL, null=True)
@@ -18,6 +21,10 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.product_name
+
 
     def save(self,*args, **kwargs):
         slug = f"{self.product_name} {self.category_id.category_title} {self.product_brand.Brand_name}"
@@ -33,14 +40,18 @@ class attribute(models.Model):
 
 class attribute_values(models.Model):
     attribute_id = models.ForeignKey(attribute,on_delete=models.CASCADE)
-    attribute_value = models.CharField(max_length=40)
-
+    attribute_value = models.CharField(max_length=40,unique=True)
+    is_active = models.BooleanField(default=True)
     
+    def __str__(self):
+        return self.attribute_value
 
 
 class Product_varient(models.Model):
     product_name = models.ForeignKey(Product,on_delete=models.CASCADE)
-    attribute_name = models.ManyToManyField(attribute,max_length=100)
+    attribute_name = models.ManyToManyField(attribute_values,max_length=100)
+    stock = models.IntegerField(default=0)
+    sku_id = models.CharField(max_length=30,unique=True,default='')
     description = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=10,decimal_places=2)
     discount_price = models.DecimalField(max_digits=10,decimal_places=2)
@@ -49,9 +60,13 @@ class Product_varient(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.product_name} {self.product_name.product_brand} {self.pk}"
 
     def save(self,*args, **kwargs):
-        slug = f"{self.product_name} {self.p} {self.attribute_name} {self.id}"
+
+        slug = f"{self.product_name} {self.product_name.product_brand} {self.pk}"
         self.varient_slug = slugify(slug)
         super(Product_varient,self).save(*args, **kwargs)
 
