@@ -13,12 +13,6 @@
                     <h3 class="mb-30">Login</h3>
                   </div>
                   <div class="padding_eight_all bg-white">
-                    {% for message in messages %}
-                      <div id="client-home" class="alert alert-{{ message.tags }} alert-dismissible fade show col-xl-5 col-lg-6 col-md-7 col-10 mx-auto" role="alert" style=" position:absolute; top:23vh; right:7.5rem;">
-                        <strong>{{ message }}</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>
-                    {% endfor %}
                     <form action="{% url 'user_app:user_login' %}" method="post">
                       {% csrf_token %}
                       <div class="form-group">

@@ -42,7 +42,7 @@
                 </div>
                 <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
                   <a href="{% url 'category_app:edit_categories' id=category.id %}" class="btn btn-sm font-sm rounded btn-brand"><i class="material-icons md-edit"></i> Edit</a>
-                  <a href="{% url 'category_app:delete_categories' id=category.id %}" class="btn btn-sm font-sm btn-light rounded"><i class="material-icons md-delete_forever"></i> Delete</a>
+                  <a href="{% url 'category_app:delete_categories' id=category.id %}" class="btn btn-sm font-sm btn-light rounded delete-variant-btn" data-category-name="{{category.category_title }}"><i class="material-icons md-delete_forever"></i> Delete</a>
                 </div>
               </div> <!-- row .// -->
             </article>
@@ -87,4 +87,32 @@
       </div>
     </footer>
   </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+       document.querySelectorAll('.delete-variant-btn').forEach(function (btn) {
+          btn.addEventListener('click', function (event) {
+             event.preventDefault();
+ 
+             const deleteUrl = event.currentTarget.getAttribute('href');
+             const categoryName = event.currentTarget.getAttribute('data-category-name');
+ 
+             // Display SweetAlert confirmation dialog
+             Swal.fire({
+                title: 'Are you sure?',
+              text: `You want to delete ${categoryName}!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Delete'
+             }).then((result) => {
+                if (result.isConfirmed) {
+                   // If confirmed, proceed with the delete action
+                   window.location.href = deleteUrl;
+                }
+             });
+          });
+       });
+    });
+ </script>
 {% endblock %}

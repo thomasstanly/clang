@@ -39,7 +39,7 @@
                   <td class="text-center">
                     <form action="{% url "product_app:attribute_value_status" id=attribute.id %}" method="POST">
                       {% csrf_token %}
-                      <button type="submit" class="badge rounded-pill alert-danger border-none">{% if attribute.is_active %}Active {% else %}Inactive{% endif %}</button>
+                      <button type="submit" class="badge rounded-pill alert-danger border-none">{% if attribute.attr_is_active %}Active {% else %}Inactive{% endif %}</button>
                     </form>
                   </td>
                 </tr>

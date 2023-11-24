@@ -5,6 +5,8 @@ from django.views.decorators.cache import cache_control
 from admin_side.views import login as admin_login
 from django.contrib import messages
 from admin_side.models import User
+from pro_category.models import Categories
+from product.models import Brand,Product_varient,product_image
 import random
 
 
@@ -75,7 +77,10 @@ def otp(request):
             customer = User.objects.create_user(user_name = user, email = email, password = password )
             customer.save()
             user_login(request,customer)
-            return redirect('user_app:index')        
+            return redirect('user_app:index')
+        else:
+            messages.error(request,"Invalid OTP")
+            return redirect('user_app:otp')   
     return render(request,'user/otp.html')
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -87,10 +92,22 @@ def login(request):
     if request.method == "POST":
         email = request.POST["email"]
         passw = request.POST["password"]
+
+        if len(passw) < 8:
+                messages.info(request,"invalid credentials")
+                return redirect('user_app:user_login')
+            
+        if not User.objects.filter(email=email):
+            messages.error(request, "Invalid Email Adress")
+            return redirect('user_app:user_login')
+        
+        
         customer = User.objects.get(email=email)
-        print(customer)
+
         if customer.is_active == True:
+
             user_details = authenticate(email = email,password = passw)
+            
             if user_details is not None and user_details.is_superuser is False:
                 user_login(request,user_details)
                 return redirect('user_app:index')
@@ -111,13 +128,69 @@ def index(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
             return redirect('admin_app:admin_login')
-        return render(request,'user/index.html')
-    return render(request,'user/index.html')
+    
+        category = Categories.objects.all()
+        brand = Brand.objects.all()
+
+        context = {
+            'categories' : category,
+            'Brands' : brand
+        }
+
+        return render(request,'user/index.html',context)
+    else:
+        category = Categories.objects.all()
+        brand = Brand.objects.all()
+
+        context = {
+            'categories' : category,
+            'Brands' : brand
+        }
+
+        return render(request,'user/index.html',context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def home(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
             return redirect('admin_app:admin_login')
-        return render(request,'user/shop-list-left.html')
-    return render(request,'user/index.html')
+        products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True)
+       
+        categories = Categories.objects.all()
+        context = {
+            'products' : products,
+            'categories': categories,
+        }
+        return render(request,'user/shop-list-left.html',context)
+    else:
+        products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True)
+        categories = Categories.objects.all()
+        context = {
+            'products' : products,
+            'categories': categories
+        }
+        return render(request,'user/shop-list-left.html',context)
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def product_details(request,slug):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return redirect('admin_app:admin_login')
+        product = Product_varient.objects.select_related('product_name').get(varient_slug=slug)
+        variant = Product_varient.objects.get(varient_slug=slug)
+        images = product_image.objects.filter(varient_id = variant)
+        context = {
+            'product' : product,
+            'images' : images,
+            
+        }
+        return render(request,'user/shop-product-detail.html',context)
+    else:
+        product = Product_varient.objects.select_related('product_name').get(varient_slug=slug)
+        variant = Product_varient.objects.get(varient_slug=slug)
+        images = product_image.objects.filter(varient_id = variant)
+        context = {
+            'product' : product,
+             'images' : images,
+        }
+        return render(request,'user/shop-product-detail.html',context)

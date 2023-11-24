@@ -11,7 +11,10 @@ urlpatterns = [
     # product variant
     path('variant/<slug:slug>',views.variant,name='variant'),
     path('variant/add/<slug:slug>',views.variant_add,name='variant_add'),
-    path('variant/edit/<slug:slug>',views.variant_edit,name='variant_edit'),
+    path('variant/status/<slug:slug>/<slug:p_slug>',views.variant_status,name='variant_status'),
+    path('variant/edit/<slug:slug>/<slug:p_slug>',views.variant_edit,name='variant_edit'),
+    path('variant/delete/<slug:slug>/<slug:p_slug>',views.delete_variant,name='delete_variant'),
+    path('variant/delete/image/<int:id>/<slug:slug>/<slug:p_slug>',views.image_variant,name='image_variant'),
     #brand
     path('brand',views.brand,name='brand'),
     path('brand/add',views.add_brand,name='add_brand'),

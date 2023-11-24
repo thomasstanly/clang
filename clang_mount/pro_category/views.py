@@ -21,7 +21,7 @@ def add_categories(request):
             image = request.FILES['image']
             try:
                 if Categories.objects.get(category_title=category):
-                    messages.info(request,"category is taken")
+                    messages.warning(request,"category is taken")
                     return redirect('category_app:add_categories')
             except:
                 pass
@@ -46,7 +46,9 @@ def edit_categories(request,id):
             if category_img:
                 category.category_img = category_img
             category.save()
+            messages.success(request,"Category updated")
             return redirect('category_app:admin_categories')
+            
         
         category = Categories.objects.get(id=id)
         context = {

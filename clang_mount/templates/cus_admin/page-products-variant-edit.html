@@ -7,7 +7,7 @@
       <div class="content-header">
         <a href="javascript:history.back()"><i class="material-icons md-arrow_back"></i> Go back</a>
       </div>
-      <form action="{% url "product_app:variant_edit" slug=variant.varient_slug %}" method="POST" enctype="multipart/form-data">
+      <form action="{% url 'product_app:variant_edit' slug=variant.varient_slug p_slug=product.product_slug %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row justify-content-center">
           <div class="col-9">
@@ -23,63 +23,72 @@
               <div class="card-body">
                 <div class="mb-4">
                   <label for="product_title" class="form-label">Product Name</label>
-                  {{form.product_name}}
-                {{form.prouct_name.errors}}
-                <div class=" error-msg">{{form.product_name.errors}}</div>
-              </div>
-              <div class="row gx-3">
-                <div class="col-md-4 mb-3">
-                  {% for attribute_name, attribute_values in attri_data.items %}
-                  <label class="form-label">{{ attribute_name }}</label>
-                  <select name="attri_values_{{forloop.counter}}" class="form-control">
-                    <option value="None">----------</option>
-                    {% for value in attribute_values %}
-                    <option class="text-primary" value="{{ value.id }}">{{ value.attribute_value }}</option>
+                  {{ form.product_name }}
+                  {{ form.prouct_name.errors }}
+                  <div class="error-msg">{{ form.product_name.errors }}</div>
+                </div>
+                <div class="row gx-3">
+                  <div class="col-md-4 mb-3">
+                    {% for attribute_name, attribute_values in attri_data.items %}
+                      <label class="form-label">{{ attribute_name }}</label>
+                      <select name="attri_values_{{ forloop.counter }}" class="form-control">
+                        <option value="None">----------</option>
+                        {% for value in attribute_values %}
+                          <option class="text-primary" value="{{ value.id }}">{{ value.attribute_value }}</option>
+                        {% endfor %}
+                      </select>
                     {% endfor %}
-                  </select>
-                  {% endfor %}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div> <!-- card end// -->
-          <div class="card mb-4">
-            <div class="card-body">
-              <div>
-                <label class="form-label">Description</label>
-                {{form.description}}
-                {{form.description.errors}}
+            </div> <!-- card end// -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <div>
+                  <label class="form-label">Description</label>
+                  {{ form.description }}
+                  {{ form.description.errors }}
+                </div>
               </div>
-            </div>
-          </div> <!-- card end// -->
-          <div class="card mb-4">
-            <div class="card-body">
-              <div>
-                <label class="form-label">Images</label>
-                {{form.thumbnail_image}}
-               
+            </div> <!-- card end// -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <div>
+                  <label class="form-label">Images</label>
+                  {{ form.thumbnail_image }}
+                </div>
               </div>
-            </div>
-          </div> <!-- card end// -->
-          <div class="card mb-4">
-            <div class="card-body">
-              <div>
-                <label class="form-label">Multiple Images</label>
-                <input name="multiple_image" class="form-control" type="file" multiple/>
+            </div> <!-- card end// -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <div>
+                  <label class="form-label">Multiple Images</label>
+                  <input name="multiple_image" class="form-control" type="file" multiple />
+                </div>
               </div>
-            </div>
-          </div> <!-- card end// -->
-        </div>
-        <div class="col-lg-3">
-          <div class="card mb-4">
-            <div class="card-body">
-              <div class="mb-4">
-                <label class="form-label">SKU</label>
-                {{ form.sku_id }}
-                {{form.sku_id.errors}}
+              <div class="row  column-gap-3">
+                {% for images in variant_image %}
+                <div class="col-3  rounded d-flex align-items-center justify-content-center position-relative">
+                  <img src="{{ images.image.url }}" alt="{{images}}" class="img-fluid mx-auto" />
+                  <div class="position-absolute top-0  end-0">
+                    <a href="{% url "product_app:image_variant" id=images.id slug=variant.varient_slug p_slug=product.product_slug %}"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></a>
+                  </div>
+                </div>
+              {% endfor %}
               </div>
-              <div class="mb-4">
-                <label class="form-label">Price</label>
-                {{ form.price }}
+            </div> <!-- card end// -->
+          </div>
+          <div class="col-lg-3">
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="mb-4">
+                  <label class="form-label">SKU</label>
+                  {{ form.sku_id }}
+                  {{ form.sku_id.errors }}
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Price</label>
+                  {{ form.price }}
                 </div>
                 <div class="mb-4">
                   <label class="form-label">Dis. Price</label>
@@ -96,5 +105,4 @@
       </form>
     </section>
   </main>
-  {% endblock %}
-  
+{% endblock %}

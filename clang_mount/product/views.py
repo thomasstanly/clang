@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
+from django.db.models import Q
 from .forms import brand_form,attribute_form, attribute_value_form, product_form, Product_varient_form, product_image
 from .models import Brand, attribute, attribute_values, Product, Product_varient
 
@@ -128,11 +129,11 @@ def add_attribute_value(request):
 def attribute_value_status(request,id):
     status = attribute_values.objects.get(id=id)
     if request.method == 'POST':
-        if status.is_active:
-            status.is_active = False
+        if status.attr_is_active:
+            status.attr_is_active = False
             status.save()
         else:
-            status.is_active = True
+            status.attr_is_active = True
             status.save()
     return redirect('product_app:attribute_values')
 
@@ -161,7 +162,7 @@ def add_product(request):
                 return redirect('product_app:product')
             else:
                 messages.success(request,"Product is not added ")
-                return redirect('product_app:add_attribute_value')         
+                return redirect('product_app:product')         
         context = {
             'form' : form
         }
@@ -225,7 +226,7 @@ def variant_add(request,slug):
         
         attri_data = {}
         for attribut in attributes:
-            attribute_value = attribut.attribute_values_set.filter(is_active=True)
+            attribute_value = attribut.attribute_values_set.filter(Q(is_active=True)  and Q(attr_is_active = True))
             attri_data[attribut.atrribute_name] = attribute_value
         count = attributes.count()
 
@@ -243,10 +244,11 @@ def variant_add(request,slug):
                 variant.attribute_name.set(attri_selected)
                 variant.save()
 
-                multi_image = request.POST.getlist('multiple_image')
-
+                multi_image = request.FILES.getlist('multiple_image')
+                print(multi_image)
                 for image in multi_image:
                     product_image.objects.create(varient_id=variant,image=image)
+                messages.success(request,"variant Added")
                 return redirect('product_app:variant',slug)
 
             else:
@@ -266,20 +268,54 @@ def variant_add(request,slug):
     else:
         return redirect('admin_app:admin_login')
 
-def variant_edit(request,slug):
+def variant_status(request,slug,p_slug):
+    if request.method == 'POST':
+        status = Product_varient.objects.get(varient_slug = slug)
+        if status.vari_is_active:
+            status.vari_is_active = False
+            status.save()
+        else:
+            status.vari_is_active = True
+            status.save()
+        return redirect('product_app:variant',p_slug)
+
+def variant_edit(request,slug,p_slug):
     if request.user.is_authenticated and request.user.is_superuser:
+        product = Product.objects.get(product_slug=p_slug)
         variant = Product_varient.objects.get(varient_slug=slug)
+        variant_image = product_image.objects.filter(varient_id = variant)
+        print(variant_image)
         form = Product_varient_form(instance=variant)
         if request.method == 'POST':
             form = Product_varient_form(request.POST,request.FILES,instance=variant)
             if form.is_valid():
                 form.save()
+                multi_image = request.FILES.getlist('multiple_image')
+                print(multi_image)
+                for image in multi_image:
+                    product_image.objects.create(varient_id=variant,image=image)
                 messages.success(request,"variant updated")
-                return redirect('product_app:variant_edit',slug)
+                return redirect('product_app:variant',p_slug)
         context = {
+            'product' : product,
             'variant' : variant,
+            'variant_image' : variant_image,
             'form' : form
         }
         return render(request,'cus_admin/page-products-variant-edit.html',context)
     else:
         return redirect('product_app:admin_login')
+
+def delete_variant(request,slug,p_slug):
+    if request.user.is_authenticated and request.user.is_superuser:
+        variant = Product_varient.objects.get(varient_slug = slug)
+        variant.delete()
+        return redirect('product_app:variant',p_slug)
+    else:
+        return redirect('product_app:admin_login')
+    
+def image_variant(request,id,slug,p_slug):
+    pass
+    v_image = product_image.objects.get(id = id)
+    v_image.delete()
+    return redirect('product_app:variant_edit',slug,p_slug)

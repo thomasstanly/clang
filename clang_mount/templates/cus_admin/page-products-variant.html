@@ -32,10 +32,10 @@
                   <span>{{variant.price}}</span>
                 </div>
                 <div class="col-lg-1 col-sm-2 col-4 col-status">
-                  <form action="{% url 'product_app:product_status' slug=product.product_slug %}" method="POST">
+                  <form action="{% url 'product_app:variant_status' slug=variant.varient_slug p_slug=product.product_slug %}" method="POST">
                     {% csrf_token %}
                     <button type="submit" class="badge rounded-pill alert-success">
-                      {% if variant.is_active %}
+                      {% if variant.vari_is_active %}
                         Active
                       {% else %}
                         Inactive
@@ -49,8 +49,8 @@
                   <span>{{variant.created_at}}</span>
                 </div>
                 <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                  <a href="{% url "product_app:variant_edit" slug=variant.varient_slug %}" class="btn btn-sm font-sm rounded btn-brand"><i class="material-icons md-edit"></i> Edit</a>
-                  <a href="#" class="btn btn-sm font-sm btn-light rounded"><i class="material-icons md-delete_forever"></i> Delete</a>
+                  <a href="{% url "product_app:variant_edit" slug=variant.varient_slug p_slug=product.product_slug %}" class="btn btn-sm font-sm rounded btn-brand"><i class="material-icons md-edit"></i> Edit</a>
+                  <a href="{% url "product_app:delete_variant" slug=variant.varient_slug p_slug=product.product_slug %}" class="btn btn-sm font-sm btn-light rounded delete-variant-btn" data-category-name="{{variant.varient_slug}}"><i class="material-icons md-delete_forever"></i> Delete</a>
                 </div>
               </div> <!-- row .// -->
             </article> <!-- itemlist .// -->
@@ -59,4 +59,32 @@
       </div>
     </section>
   </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+       document.querySelectorAll('.delete-variant-btn').forEach(function (btn) {
+          btn.addEventListener('click', function (event) {
+             event.preventDefault();
+ 
+             const deleteUrl = event.currentTarget.getAttribute('href');
+             const categoryName = event.currentTarget.getAttribute('data-category-name');
+ 
+             // Display SweetAlert confirmation dialog
+             Swal.fire({
+                title: 'Are you sure?',
+                text: `You want to delete ${categoryName}`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Delete'
+             }).then((result) => {
+                if (result.isConfirmed) {
+                   // If confirmed, proceed with the delete action
+                   window.location.href = deleteUrl;
+                }
+             });
+          });
+       });
+    });
+ </script>
 {% endblock %}

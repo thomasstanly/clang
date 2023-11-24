@@ -6,9 +6,11 @@ from django.contrib import messages
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def login(request):
-    if request.user.is_authenticated:
-        if request.user.is_superuser:
+    if request.user.is_superuser:
+        if request.user.is_authenticated:
             return redirect('admin_app:dashboard')
+        return redirect('admin_app:admin_login')
+        
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
@@ -31,12 +33,6 @@ def dashboard(request):
             return render(request,'cus_admin/index.html')
     return redirect('admin_app:admin_login')
 
-def brands(request):
-    if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'cus_admin/page-brands.html')
-    else:
-         return redirect('admin_app:admin_login')
-        
 def order(request):
     if request.user.is_authenticated and request.user.is_superuser:
         return render(request,'cus_admin/page-orders-1.html')

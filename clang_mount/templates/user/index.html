@@ -43,20 +43,16 @@
     </section>
     <section class="featured section-padding position-relative">
       <div class="container-fluid">
-        <div class="row">
+        <div class="row justify-content-center">
           <h3 class="section-title mb-20"><span>Popular</span> Categories</h3>
-          <div class="col-lg-4 col-md-4 mb-md-3 mb-lg-0">
-            <div class="banner-features wow fadeIn animated hover-up">
-              <img src="{% static 'user_assets/imgs/theme/icons/feature-1.png' %}" alt="" />
-              <h4 class="bg-1">bluetooth speaker</h4>
+          {% for category in categories %}
+            <div class="col-lg-2 col-md-3 mb-md-3 mb-lg-0">
+              <div class="banner-features wow fadeIn animated hover-up">
+                <img src="{{ category.category_img.url }}" alt="" />
+                <h4 class="bg-1">{{ category.category_title }}</h4>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-4 col-md-4 mb-md-3 mb-lg-0">
-            <div class="banner-features wow fadeIn animated hover-up">
-              <img src="{% static 'user_assets/imgs/theme/icons/feature-2.png' %}" alt="" />
-              <h4 class="bg-3">soundbar</h4>
-            </div>
-          </div>
+          {% endfor %}
         </div>
       </div>
     </section>
@@ -114,27 +110,11 @@
         <div class="carausel-6-columns-cover position-relative wow fadeIn animated">
           <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-3-arrows"></div>
           <div class="carausel-6-columns" id="carausel-6-columns-3">
-            <div class="brand-logo">
-              <img class="img-grey-hover" src="{% static 'user_assets/imgs/banner/JBL.png' %}" alt="" />
-            </div>
-            <div class="brand-logo">
-              <img class="img-grey-hover" src="{% static 'user_assets/imgs/banner/Sony.png' %}" alt="" />
-            </div>
-            <div class="brand-logo">
-              <img class="mt-15 img-grey-hover" src="{% static 'user_assets/imgs/banner/marshall.png' %}" alt="" />
-            </div>
-            <div class="brand-logo">
-              <img class="mt-5 img-grey-hover" src="{% static 'user_assets/imgs/banner/boat.png' %}" alt="" />
-            </div>
-            <div class="brand-logo">
-              <img class="mt-25 img-grey-hover" src="{% static 'user_assets/imgs/banner/Bose.png' %}" alt="" />
-            </div>
-            <div class="brand-logo">
-              <img class="mt-25 img-grey-hover" src="{% static 'user_assets/imgs/banner/Blaupunkt.png' %}" alt="" />
-            </div>
-            <div class="brand-logo">
-              <img class="img-grey-hover" src="{% static 'user_assets/imgs/banner/Zebronics.png' %}" alt="" />
-            </div>
+            {% for brand in Brands %}
+              <div class="brand-logo d-flex align-items-center justify-content-center">
+                <img class="img-grey-hover" src="{{brand.brand_image.url}}" alt="brands_{{forloop.counter}}" />
+              </div>
+            {% endfor %}
           </div>
         </div>
       </div>

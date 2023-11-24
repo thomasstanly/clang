@@ -35,7 +35,7 @@ class attribute_value_form(forms.ModelForm):
     class Meta:
         model = attribute_values
         fields = '__all__'
-        exclude = ['is_active']
+        exclude = ['attr_is_active']
         
 
 
@@ -63,5 +63,5 @@ class Product_varient_form(forms.ModelForm):
     class Meta:
         model = Product_varient
         fields = '__all__'
-        exclude = ['is_active','attribute_name', 'varient_slug']
+        exclude = ['vari_is_active','attribute_name', 'varient_slug']
 

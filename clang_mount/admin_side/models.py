@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+from django.core.validators import MaxValueValidator,RegexValidator,MinValueValidator
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
 
 # Create your models here.
@@ -16,7 +18,7 @@ class Manager(BaseUserManager):
         other_field.setdefault('is_superuser',True)
         other_field.setdefault('is_staff',True)
         return self.create_user(email,password,user_name, **other_field)
-
+ 
 class User(AbstractBaseUser,PermissionsMixin):
     user_name = models.CharField(max_length=30, unique=True)
     email = models.EmailField(unique=True)
@@ -25,6 +27,8 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     joined_on = models.DateTimeField(auto_now_add=True)
+    date_of_birth = models.DateField(blank=True,null=True,validators=[MaxValueValidator(limit_value=timezone.now().date())],)
+    phone = models.BigIntegerField(unique=True,null=True,validators=[MinValueValidator(1000000000),MaxValueValidator(9999999999)])
 
     objects = Manager()
 

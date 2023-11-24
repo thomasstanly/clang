@@ -9,4 +9,5 @@ urlpatterns = [
     path('otp_verification',views.otp_verification,name="otp_verification"),
     path('',views.index,name='index'),
     path('home',views.home,name='home'),
+    path('<slug:slug>',views.product_details,name='product_details')
 ]

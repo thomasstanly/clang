@@ -13,7 +13,7 @@ class Brand(models.Model):
         return self.Brand_name
 
 class Product(models.Model):
-    product_name = models.CharField(max_length=60)
+    product_name = models.CharField(max_length=60,unique=True,blank=False)
     category_id = models.ForeignKey(Categories,on_delete=models.SET_NULL, null=True)
     product_brand = models.ForeignKey(Brand,on_delete=models.SET_NULL, null= True)
     description = models.CharField(max_length=250)
@@ -41,7 +41,7 @@ class attribute(models.Model):
 class attribute_values(models.Model):
     attribute_id = models.ForeignKey(attribute,on_delete=models.CASCADE)
     attribute_value = models.CharField(max_length=40,unique=True)
-    is_active = models.BooleanField(default=True)
+    attr_is_active = models.BooleanField(default=True)
     
     def __str__(self):
         return self.attribute_value
@@ -57,7 +57,7 @@ class Product_varient(models.Model):
     discount_price = models.DecimalField(max_digits=10,decimal_places=2)
     thumbnail_image = models.ImageField(upload_to='product/thumbnail',blank=True)
     varient_slug = models.SlugField(unique=True,max_length=300,blank=True)
-    is_active = models.BooleanField(default=True)
+    vari_is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -74,4 +74,6 @@ class product_image(models.Model):
     varient_id = models.ForeignKey(Product_varient, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='varient/')
 
+    def __str__(self):
+        return f"{self.image}"
     

@@ -31,7 +31,9 @@ INSTALLED_APPS = [
     'user_side.apps.UserSideConfig',
     'customer_details.apps.CustomerDetailsConfig',
     'pro_category.apps.ProCategoryConfig',
-    'product.apps.ProductConfig'
+    'product.apps.ProductConfig',
+    'account.apps.AccountConfig',
+    'cart.apps.CartConfig',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +134,10 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "clangmount@gmail.com"
 EMAIL_HOST_PASSWORD = "ekhukgmmrpvhaken"
 EMAIL_USE_TLS = True
+
+
+# For user authentication
+SESSION_COOKIE_NAME = 'user_session_id'
+
+# For admin authentication
+ADMIN_SESSION_COOKIE_NAME = 'admin_session_id'
