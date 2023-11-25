@@ -15,34 +15,39 @@
                     <th scope="col" class="text-center">Quantity</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">
-                      <div class="d-flex align-items-center">
-                        <img src="https://i.imgur.com/2DsA49b.webp" class="img-fluid rounded-3" style="width: 120px;" alt="Book" />
-                        <div class="flex-column ms-4">
-                          <p class="mb-2">Thinking, Fast and Slow</p>
-                          <p class="mb-0">Daniel Kahneman</p>
+                {% for item in items %}
+                  <tbody>
+                    <tr>
+                      <th scope="row">
+                        <div class="d-flex align-items-center">
+                          <img src="{{item.product.thumbnail_image.url}}" class="img-fluid rounded-3" style="width: 120px;" alt="Book" />
+                          <div class="flex-column ms-4">
+                            <p class="mb-2">{{item.product.product_name}}</p>
+                            <p class="mb-0">{{item.product.product_name.product_brand}}</p>
+                          </div>
                         </div>
-                      </div>
-                    </th>
-                    <td class="align-middle text-center">
-                      <p class="mb-0" style="font-weight: 500;">₹ 500</p>
-                    </td>
-                    <td class="align-middle text-center">
-                      <div class="d-flex border number-input justify-content-between">
-                        <button class="btn btn-link px-2" onclick="this.parentNode.querySelector('input[type=number]').stepDown()"><i class="fas fa-minus"></i></button>
+                      </th>
+                      <td class="align-middle text-center">
+                        <p class="mb-0" style="font-weight: 500;">₹ {{ item.product.price }}</p>
+                        <!-- Add the data-price attribute -->
+                        <input type="hidden" class="product-price" value="{{ item.product.price }}"/>
+                      </td>
+                      <td class="align-middle text-center">
+                        <div class="d-flex border rounded justify-content-between mx-auto w-75">
+                          <button class="btn btn-link px-3" onclick="this.parentNode.querySelector('input[type=number]').stepDown()"><i class="fas fa-minus"></i></button> 
 
-                        <input id="form1" min="1" name="quantity" value="1" type="number" class="form-control p-0" style="width: 40px;border: none;" />
+                          <span class="hidden-value"></span>
+                          <input id="{{item.id}}" min="1" name="quantity" value="{{ item.quantity }}" type="number" class="form-control p-0 quantity-input" style="width: 40px;border: none;" />
 
-                        <button class="btn btn-link px-2" onclick="this.parentNode.querySelector('input[type=number]').stepUp()"><i class="fas fa-plus"></i></button>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">
-                      <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
-                    </td>
-                  </tr>
-                </tbody>
+                          <button class="btn btn-link px-3" onclick="this.parentNode.querySelector('input[type=number]').stepUp()"><i class="fas fa-plus"></i></button>
+                        </div>
+                      </td>
+                      <td class="align-middle text-center">
+                        <a href="{% url "cart_app:delete_cart_item"  id=item.id%}" class="text-dark"><i class="fas fa-trash fa-lg"></i></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                {% endfor %}
               </table>
             </div>
           </div>
@@ -78,44 +83,66 @@
     </section>
   </main>
   <script>
+    console.log('hello world')
+  </script>
+{% endblock %}
+
+{% comment %} 
+<script>
     document.addEventListener('DOMContentLoaded', function () {
-      const quantityInput = document.getElementById('form1')
-      const subTotalElement = document.getElementById('sub-total')
-      const discountElement = document.getElementById('discount')
-      const shippingElement = document.getElementById('shipping')
-      const totalElement = document.getElementById('total')
+      // Use a class instead of an ID for quantityInput
+      const quantityInputs = document.querySelectorAll('.quantity-input');
+      const subTotalElement = document.getElementById('sub-total');
+      const discountElement = document.getElementById('discount');
+      const shippingElement = document.getElementById('shipping');
+      const totalElement = document.getElementById('total');
     
       // Function to update the total based on the quantity
       function updateTotal() {
-        const quantity = parseInt(quantityInput.value, 10)
-        const price = 1000 // Replace with the actual price per item
+        let totalQuantity = 0;
+        let totalSubtotal = 0;
     
-        const subTotal = quantity * price
-        const discount = 0 // Replace with the actual discount
-        const shipping = 0 // Replace with the actual shipping cost
+
+        quantityInputs.forEach(function (quantityInput) {
+          const quantity = parseInt(quantityInput.value, 10);
+
+          const priceElement = quantityInput.closest('tr').querySelector('.product-price');
+          const price = parseFloat(priceElement.value.replace('₹', ''));
     
-        const total = subTotal - discount + shipping
+          const subTotal = quantity * price;
     
-        subTotalElement.textContent = ` ₹ ${subTotal}`
-        discountElement.textContent = `₹ ${discount}`
-        shippingElement.textContent = ` ₹ ${shipping}`
-        totalElement.textContent = ` ${total}`
+          totalQuantity += quantity;
+          totalSubtotal += subTotal;
+        });
+    
+        const discount = 0; // Replace with the actual discount
+        const shipping = 0; // Replace with the actual shipping cost
+    
+        const total = totalSubtotal - discount + shipping;
+    
+        subTotalElement.textContent = ` ₹ ${totalSubtotal}`;
+        discountElement.textContent = `₹ ${discount}`;
+        shippingElement.textContent = ` ₹ ${shipping}`;
+        totalElement.textContent = ` ${total}`;
       }
     
-      // Attach event listeners to the plus and minus buttons
-      document.querySelector('button[onclick^="this.parentNode.querySelector(\'input[type=number]\').stepDown()"]').addEventListener('click', updateTotal)
-      document.querySelector('button[onclick^="this.parentNode.querySelector(\'input[type=number]\').stepUp()"]').addEventListener('click', updateTotal)
+      // Attach event listeners to the plus and minus buttons for each input
+      quantityInputs.forEach(function (quantityInput) {
+        quantityInput.parentNode.querySelector('button[onclick^="this.parentNode.querySelector(\'input[type=number]\').stepDown()"]').addEventListener('click', updateTotal);
+        quantityInput.parentNode.querySelector('button[onclick^="this.parentNode.querySelector(\'input[type=number]\').stepUp()"]').addEventListener('click', updateTotal);
+      });
     
-      const placeOrderLink = document.getElementById('place-order-link')
+      const placeOrderLink = document.getElementById('place-order-link');
       placeOrderLink.addEventListener('click', function (event) {
-        event.preventDefault() // Prevent the default behavior of the link
-        const totalAmount = parseInt(totalElement.innerText.replace('₹', '').replace(',', '').trim())
-        sendTotalToBackend(totalAmount)
+        event.preventDefault(); // Prevent the default behavior of the link
+        const totalAmount = parseInt(totalElement.innerText.replace('₹', '').replace(',', '').trim());
+        sendTotalToBackend(totalAmount);
         // Add any additional logic or redirection after sending the total to the backend
-      })
+      });
+    
       // Initial update
-      updateTotal()
-    })
+      updateTotal();
+    });
     
     // Function to send total to the backend
     function sendTotalToBackend(total) {
@@ -129,12 +156,13 @@
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data)
+          console.log(data);
           // Add code to handle the response if needed
         })
         .catch((error) => {
-          console.error('Error:', error)
-        })
+          console.error('Error:', error);
+        });
     }
+    
   </script>
-{% endblock %}
+{% endcomment %}

@@ -237,7 +237,6 @@ def variant_add(request,slug):
                 value = request.POST.get('attri_values_'+str(attri))
                 if value != 'None':
                     attri_selected.append(int(value))
-            print(attri_selected)
 
             if form.is_valid():
                 variant = form.save()
