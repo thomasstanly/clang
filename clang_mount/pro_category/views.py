@@ -63,3 +63,6 @@ def delete_categories(request,id):
         category = Categories.objects.get(id=id)
         category.delete()
         return redirect('category_app:admin_categories')
+    
+def search(requesr):
+    pass

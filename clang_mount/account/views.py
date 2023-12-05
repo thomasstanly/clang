@@ -3,7 +3,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from .forms import profileForm, AddressForm, PasswordForm
+from product.models import Product_varient
 from .models import Address
+from order.models import Order,OrderProduct
 from admin_side.models import User
 
 
@@ -15,6 +17,7 @@ def account(request):
             return redirect('admin_app:admin_login')
         user = request.user
         address = Address.objects.filter(user = user)
+        order = Order.objects.filter(user = user).order_by('-created_at')
         profile_form = profileForm(instance=user)
         address_form = AddressForm()
         password_form = PasswordForm(user)
@@ -35,6 +38,7 @@ def account(request):
             'addresses' : address,
             'address_form' : address_form,
             'password_form' : password_form,
+            'orders': order,
         }
         return render(request,'user/page-account.html',context)
     else:
@@ -57,9 +61,18 @@ def address(request,id):
             messages.success(request, 'Address added successfully.')
             return redirect('account_app:account')
         else:
-            messages.error(request, 'Please check the form.')
+            for field, errors in form.errors.items():
+                for error in errors:
+                    # Append the help text to the error message
+                    messages.error(request, f"{error} {form.fields[field].help_text}")
     
         return redirect('account_app:account')
+    
+def delete_address(request,id):
+    if request.user.is_authenticated:
+        address = Address.objects.get(id=id)
+        address.delete()
+    return redirect('account_app:account')
 
 def change_password(request):
     user = request.user
@@ -75,4 +88,31 @@ def change_password(request):
                     # Append the help text to the error message
                     messages.error(request, f"{error} {form.fields[field].help_text}")
 
+    return redirect('account_app:account')
+
+def order_details(request,id):
+    if request.user.is_authenticated:
+        print(id)
+        order = Order.objects.get(id=id)
+        product = OrderProduct.objects.filter(order=id)
+        print(product)
+        context = {
+            'products': product,
+            'order': order,
+        }
+
+        return render(request,'user/page-account-order.html',context)
+
+def cancel_order(request,id):
+    if request.user.is_authenticated:
+        order = Order.objects.get(id=id)  
+        
+        order_items = OrderProduct.objects.filter(order=order)
+        for item in order_items:
+            product = Product_varient.objects.get(id=item.product.id)
+            product.stock += item.quantity
+            product.save()
+    
+        order.status = 'CANCELLED'
+        order.save()
     return redirect('account_app:account')

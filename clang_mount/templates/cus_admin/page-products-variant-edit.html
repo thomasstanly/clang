@@ -12,7 +12,7 @@
         <div class="row justify-content-center">
           <div class="col-9">
             <div class="content-header">
-              <h2 class="content-title">Add New Variant</h2>
+              <h2 class="content-title">Edit Variant</h2>
               <div>
                 <button type="submit" class="btn btn-md rounded font-sm hover-up">Update</button>
               </div>
@@ -91,8 +91,9 @@
                   {{ form.price }}
                 </div>
                 <div class="mb-4">
-                  <label class="form-label">Dis. Price</label>
-                  {{ form.discount_price }}
+                  <label class="form-label">Dis. percentage</label>
+                  {{ form.discount_percentage }}
+                  {{form.discount_percentage.errors}}
                 </div>
                 <div class="mb-4">
                   <label class="form-label">Stock</label>

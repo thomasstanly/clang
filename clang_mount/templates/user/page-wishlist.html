@@ -1,0 +1,70 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block content %}
+  <main class="main">
+    <section class="mt-50 mb-50">
+      <div class="container">
+        {% if request.user.is_authenticated and wishlists %}
+          <div class="row justify-content-center">
+            <div class="col-lg-10">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  {% for wishlist in wishlists %}
+                    <tbody>
+                      <tr>
+                        <th scope="row">
+                          <div class="d-flex align-items-center">
+                            <img src="{{ wishlist.product.thumbnail_image.url }}" class="img-fluid rounded-3" style="width: 120px;" alt="Book" />
+                            <div class="flex-column ms-4">
+                              <p class="mb-2">{{ wishlist.product.product_name }}</p>
+                              <p class="mb-0">{{ wishlist.product.product_name.product_brand }}</p>
+                            </div>
+                          </div>
+                        </th>
+                        <td class="align-middle text-center">
+                          <p class="mb-0" style="font-weight: 500;">₹ {{ wishlist.product.price }}</p>
+                          <!-- Add the data-price attribute -->
+                          <input type="hidden" class="product-price" value="{{ wishlist.product.price }}" />
+                        </td>
+                        <td class="align-middle text-center">
+                          <p class="mb-0" style="font-weight: 500;">{{ wishlist.product.discount_percentage }} %</p>
+                          <!-- Add the data-price attribute -->
+                          <input class="product-discount" type="hidden" value="{{ wishlist.product.discount_percentage }}" />
+                        </td>
+                        <td class="align-middle text-center ">
+                          <div class="product-extra-link2 d-flex justify-content-center">
+                            <a aria-label="Buy now" class="action-btn w-50 p-0" href="{% url 'cart_app:add_to_cart' slug=wishlist.product.varient_slug %}"><i class="fi-rs-shopping-bag-add"></i> Add to Cart</a>
+                          </div>
+                        </td>
+                        <td class="align-middle text-center">
+                          <a href="{% url 'cart_app:delete_wishlist' slug=wishlist.product.varient_slug %}" class="text-dark"><i class="fas fa-trash fa-lg"></i></a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  {% endfor %}
+                </table>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="row justify-content-center">
+            <div class="col-lg-8 bg-light py-5 shadow p-3 mb-5 bg-body-tertiary">
+              <center>
+                <img src="{% static 'user_assets/imgs/shop/mywishlist.png' %}" alt="empty cart" />
+              </center>
+              <center>
+                <p class="py-1 text-dark">Empty Wishlist!</p>
+              </center>
+              <center>
+                <p class="py-1" style="font-size: smaller;">you have no items in your wishlist</p>
+              </center>
+              <center>
+                <a href="{% url 'shop_app:home' %}" class="btn">Shop now</a>
+              </center>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  </main>
+{% endblock %}

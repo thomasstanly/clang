@@ -54,12 +54,18 @@ class Product_varient(models.Model):
     sku_id = models.CharField(max_length=30,unique=True,default='')
     description = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=10,decimal_places=2)
-    discount_price = models.DecimalField(max_digits=10,decimal_places=2)
+    discount_percentage = models.IntegerField(null=True,blank=True)
     thumbnail_image = models.ImageField(upload_to='product/thumbnail',blank=True)
     varient_slug = models.SlugField(unique=True,max_length=300,blank=True)
     vari_is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def after_discount(self):
+        price = self.price
+        discount = (self.discount_percentage * price)/100
+        return price - discount
+
     
     def __str__(self):
         return f"{self.product_name} {self.product_name.product_brand} {self.pk}"
@@ -68,6 +74,7 @@ class Product_varient(models.Model):
 
         slug = f"{self.product_name} {self.product_name.product_brand} {self.pk}"
         self.varient_slug = slugify(slug)
+        
         super(Product_varient,self).save(*args, **kwargs)
 
 class product_image(models.Model):

@@ -7,4 +7,5 @@ urlpatterns = [
    path('add_category',views.add_categories,name='add_categories'),
    path('edit_category/<int:id>',views.edit_categories,name='edit_categories'),
    path('delete_category/<int:id>',views.delete_categories,name='delete_categories'),
+   path('search',views.search,name='search'),
 ]

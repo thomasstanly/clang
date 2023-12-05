@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'product.apps.ProductConfig',
     'account.apps.AccountConfig',
     'cart.apps.CartConfig',
+    'shop.apps.ShopConfig',
+    'order.apps.OrderConfig',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +62,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.car_fuc',
+                'cart.context_processors.wishlist_func',
             ],
         },
     },

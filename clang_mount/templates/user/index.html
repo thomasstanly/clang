@@ -23,7 +23,7 @@
                     <h2 class="animated fw-900">Supper value deals</h2>
                     <h1 class="animated fw-900 text-brand">On all products</h1>
                     <p class="animated">Save more with coupons & up to 70% off</p>
-                    <a class="animated btn btn-brush btn-brush-3" href="{% url 'user_app:home' %}">Shop Now</a>
+                    <a class="animated btn btn-brush btn-brush-3" href="{% url 'shop_app:home' %}">Shop Now</a>
                   </div>
                 </div>
               </div>
@@ -47,10 +47,12 @@
           <h3 class="section-title mb-20"><span>Popular</span> Categories</h3>
           {% for category in categories %}
             <div class="col-lg-2 col-md-3 mb-md-3 mb-lg-0">
-              <div class="banner-features wow fadeIn animated hover-up">
-                <img src="{{ category.category_img.url }}" alt="" />
-                <h4 class="bg-1">{{ category.category_title }}</h4>
-              </div>
+              <a href="{% url "shop_app:search_category" id=category.id %}">
+                <div class="banner-features wow fadeIn animated hover-up">
+                  <img src="{{ category.category_img.url }}" alt="" />
+                  <h4 class="bg-1">{{ category.category_title }}</h4>
+                </div>
+              </a>
             </div>
           {% endfor %}
         </div>
@@ -112,7 +114,9 @@
           <div class="carausel-6-columns" id="carausel-6-columns-3">
             {% for brand in Brands %}
               <div class="brand-logo d-flex align-items-center justify-content-center">
-                <img class="img-grey-hover" src="{{brand.brand_image.url}}" alt="brands_{{forloop.counter}}" />
+                <a href="{% url "shop_app:search_brand" id=brand.id %}">
+                  <img class="img-grey-hover" src="{{brand.brand_image.url}}" alt="brands_{{forloop.counter}}" />
+                </a>
               </div>
             {% endfor %}
           </div>

@@ -4,165 +4,177 @@
   <main class="main">
     <section class="mt-50 mb-50">
       <div class="container">
-        <div class="row">
-          <div class="col-lg-9">
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col" class="h5">Shopping Bag</th>
-                    <th scope="col" class="text-center">Price</th>
-                    <th scope="col" class="text-center">Quantity</th>
-                  </tr>
-                </thead>
-                {% for item in items %}
-                  <tbody>
+        {% if request.user.is_authenticated and items %}
+          <div class="row">
+            <div class="col-lg-9">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
                     <tr>
-                      <th scope="row">
-                        <div class="d-flex align-items-center">
-                          <img src="{{item.product.thumbnail_image.url}}" class="img-fluid rounded-3" style="width: 120px;" alt="Book" />
-                          <div class="flex-column ms-4">
-                            <p class="mb-2">{{item.product.product_name}}</p>
-                            <p class="mb-0">{{item.product.product_name.product_brand}}</p>
-                          </div>
-                        </div>
-                      </th>
-                      <td class="align-middle text-center">
-                        <p class="mb-0" style="font-weight: 500;">₹ {{ item.product.price }}</p>
-                        <!-- Add the data-price attribute -->
-                        <input type="hidden" class="product-price" value="{{ item.product.price }}"/>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex border rounded justify-content-between mx-auto w-75">
-                          <button class="btn btn-link px-3" onclick="this.parentNode.querySelector('input[type=number]').stepDown()"><i class="fas fa-minus"></i></button> 
-
-                          <span class="hidden-value"></span>
-                          <input id="{{item.id}}" min="1" name="quantity" value="{{ item.quantity }}" type="number" class="form-control p-0 quantity-input" style="width: 40px;border: none;" />
-
-                          <button class="btn btn-link px-3" onclick="this.parentNode.querySelector('input[type=number]').stepUp()"><i class="fas fa-plus"></i></button>
-                        </div>
-                      </td>
-                      <td class="align-middle text-center">
-                        <a href="{% url "cart_app:delete_cart_item"  id=item.id%}" class="text-dark"><i class="fas fa-trash fa-lg"></i></a>
-                      </td>
+                      <th scope="col" class="h5">Shopping Bag</th>
+                      <th scope="col" class="text-center w-25">Price</th>
+                      <th scope="col" class="text-center">Discount</th>
+                      <th scope="col" class="text-center">Quantity</th>
                     </tr>
-                  </tbody>
-                {% endfor %}
-              </table>
+                  </thead>
+                  {% for item in items %}
+                    <tbody>
+                      <tr>
+                        <th scope="row">
+                          <div class="d-flex align-items-center">
+                            <a href="{% url "shop_app:product_details" slug=item.product.varient_slug %}"><img src="{{ item.product.thumbnail_image.url }}" class="img-fluid rounded-3" style="width: 120px;" alt="Book" /></a>
+                            <div class="flex-column ms-4">
+                              <p class="mb-2">{{ item.product.product_name }}</p>
+                              <p class="mb-0">{{ item.product.product_name.product_brand }}</p>
+                            </div>
+                          </div>
+                        </th>
+                        <td class="align-middle text-center">
+                          <p class="mb-0" style="font-weight: 500;">₹ {{ item.product.price }}</p>
+                          <!-- Add the data-price attribute -->
+                          <input type="hidden" class="product-price" value="{{ item.product.price }}" />
+                        </td>
+                        <td class="align-middle text-center">
+                          <p class="mb-0" style="font-weight: 500;">{{ item.product.discount_percentage }} %</p>
+                          <!-- Add the data-price attribute -->
+                          <input class="product-discount" type="hidden" value="{{ item.product.discount_percentage }}" />
+                        </td>
+                        <td class="align-middle text-center">
+                          <div class="d-flex border rounded justify-content-between mx-auto w-75">
+                            <button class="btn btn-link px-3 update-cart max-minus" data-item="{{ item.id }}" onclick="this.parentNode.querySelector('input[type=number]').stepDown()"><i class="fas fa-minus"></i></button>
+
+                            <span class="w-25">   </span>
+                            <input class="form-control w-50 p-1 quantity-input quantity-input-{{ item.id }}" id="form1" min="1" name="quantity" data-max="{{ item.product.stock }}" value="{{ item.quantity }}" type="number" />
+
+                            <button class="btn btn-link px-3 update-cart max-plus" data-item="{{ item.id }}" onclick="this.parentNode.querySelector('input[type=number]').stepUp()"><i class="fas fa-plus"></i></button>
+                          </div>
+                        </td>
+                        <td class="align-middle text-center">
+                          <a href="{% url 'cart_app:delete_cart_item' id=item.id %}" class="text-dark"><i class="fas fa-trash fa-lg"></i></a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  {% endfor %}
+                </table>
+              </div>
+            </div>
+            <div class="col-lg-3 primary-sidebar">
+              <div class="widget-category mb-30">
+                <h5 class="section-title style-1 mb-30 wow fadeIn animated">Cart total</h5>
+                <div class="d-flex justify-content-between">
+                  <p>Sub-total</p>
+                  <p id="sub-total">₹ {{ sub_total }}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <p>Discount</p>
+                  <p id="discount">₹ {{ dis_total }}</p>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-between">
+                  <p class="fw-bolder fs-5">Total</p>
+                  <p class="fs-5">
+                    ₹ <span class="fw-bolder" id="total">{{ total }}</span>
+                  </p>
+                </div>
+                <div class="d-flex justify-content-center mt-30 btn-dark rounded">
+                  <a id="place-order-link" class="text-white fs-5 py-2 py-0" href="{% url "cart_app:checkout" %}">Checkout</a>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="col-lg-3 primary-sidebar">
-            <div class="widget-category mb-30">
-              <h5 class="section-title style-1 mb-30 wow fadeIn animated">Card total</h5>
-              <div class="d-flex justify-content-between">
-                <p>Sub-total</p>
-                <p id="sub-total"></p>
+        {% elif 'cart' in request.session %}
+          <div class="row">
+            <div class="col-lg-9">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col" class="h5">Shopping Bag</th>
+                      <th scope="col" class="text-center">Price</th>
+                      <th scope="col" class="text-center">Discount</th>
+                      <th scope="col" class="text-center">Quantity</th>
+                    </tr>
+                  </thead>
+                  {% for item in items %}
+                    <tbody>
+                      <tr>
+                        <th scope="row">
+                          <div class="d-flex align-items-center">
+                            <img src="{{ item.product.thumbnail_image.url }}" class="img-fluid rounded-3" style="width: 120px;" alt="Book" />
+                            <div class="flex-column ms-4">
+                              <p class="mb-2">{{ item.product.product_name }}</p>
+                              <p class="mb-0">{{ item.product.product_name.product_brand }}</p>
+                            </div>
+                          </div>
+                        </th>
+                        <td class="align-middle text-center">
+                          <p class="mb-0" style="font-weight: 500;">₹ {{ item.product.price }}</p>
+                          <!-- Add the data-price attribute -->
+                          <input type="hidden" class="product-price" value="{{ item.product.price }}" />
+                        </td>
+                        <td class="align-middle text-center">
+                          <p class="mb-0" style="font-weight: 500;">{{ item.product.discount_percentage }} %</p>
+                          <!-- Add the data-price attribute -->
+                          <input class="product-discount" type="hidden" value="{{ item.product.discount_percentage }}" />
+                        </td>
+                        <td class="align-middle text-center">
+                          <div class="d-flex  border-dark-subtle rounded justify-content-between mx-auto w-75">
+                            <button class="btn btn- px-3 update-cart" data-item="{{ item.product.id }}" onclick="this.parentNode.querySelector('input[type=number]').stepDown()"><i class="fas fa-minus"></i></button>
+
+                            <span></span>
+                            <input class="form-control p-0  quantity-input quantity-input-{{ item.id }}" id="form1" min="1" name="quantity" max="{{ item.product.stock }}" value="{{ item.quantity }}" type="number" style="width: 40px;border: none;" />
+
+                            <button class="btn px-3 update-cart bt" data-item="{{ item.product.id }}" onclick="this.parentNode.querySelector('input[type=number]').stepUp()"><i class="fas fa-plus"></i></button>
+                          </div>
+                        </td>
+                        <td class="align-middle text-center">
+                          <a href="{% url 'cart_app:delete_cart_item' id=item.product.id %}" class="text-dark"><i class="fas fa-trash fa-lg"></i></a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  {% endfor %}
+                </table>
               </div>
-              <div class="d-flex justify-content-between">
-                <p>Discount</p>
-                <p id="discount"></p>
-              </div>
-              <div class="d-flex justify-content-between">
-                <p>Shipping</p>
-                <p id="shipping"></p>
-              </div>
-              <hr />
-              <div class="d-flex justify-content-between">
-                <p class="fw-bolder fs-5">Total</p>
-                <p class="fs-5">
-                  ₹ <span class="fw-bolder" id="total"></span>
-                </p>
-              </div>
-              <div class="d-flex justify-content-center mt-30 btn-dark rounded">
-                <a id="place-order-link" class="text-white fs-6 py-2 py-0" href="shop-cart.html"><span class="px-5">PLACE ORDER</span></a>
+            </div>
+            <div class="col-lg-3 primary-sidebar">
+              <div class="widget-category mb-30">
+                <h5 class="section-title style-1 mb-30 wow fadeIn animated">Cart total</h5>
+                <div class="d-flex justify-content-between">
+                  <p>Sub-total</p>
+                  <p id="sub-total">₹ {{ sub_total }}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <p>Discount</p>
+                  <p id="discount">₹ {{ dis_total }}</p>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-between">
+                  <p class="fw-bolder fs-5">Total</p>
+                  <p class="fs-5">
+                    ₹ <span class="fw-bolder" id="total">{{ total }}</span>
+                  </p>
+                </div>
+                <div class="d-flex justify-content-center mt-30 btn-dark rounded">
+                  <a id="place-order-link" class="text-white fs-5 py-2 py-0" href="{% url "user_app:user_login" %}"><span class="px-5">Checkout</span></a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        {% else %}
+          <div class="row justify-content-center">
+            <div class="col-lg-8 bg-light py-5 shadow p-3 mb-5 bg-body-tertiary">
+              <center><img style="width: 15vw;" src="{% static 'user_assets/imgs/shop/cart.png' %}" alt="empty cart"></center>
+              <center><p class="py-1 text-dark">Your cart is empty!</p></center>
+              <center><p class="py-1" style="font-size: smaller;">Add items to it now</p></center>
+              <center><a href="{% url "shop_app:home" %}" class="btn">Shop now</a></center>
+            </div>
+          </div>
+        {% endif %}
       </div>
     </section>
   </main>
   <script>
-    console.log('hello world')
+    const csrfToken = '{{ csrf_token }}'
+    const updateCartUrl = '{% url "cart_app:update_cart" %}'
   </script>
 {% endblock %}
-
-{% comment %} 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Use a class instead of an ID for quantityInput
-      const quantityInputs = document.querySelectorAll('.quantity-input');
-      const subTotalElement = document.getElementById('sub-total');
-      const discountElement = document.getElementById('discount');
-      const shippingElement = document.getElementById('shipping');
-      const totalElement = document.getElementById('total');
-    
-      // Function to update the total based on the quantity
-      function updateTotal() {
-        let totalQuantity = 0;
-        let totalSubtotal = 0;
-    
-
-        quantityInputs.forEach(function (quantityInput) {
-          const quantity = parseInt(quantityInput.value, 10);
-
-          const priceElement = quantityInput.closest('tr').querySelector('.product-price');
-          const price = parseFloat(priceElement.value.replace('₹', ''));
-    
-          const subTotal = quantity * price;
-    
-          totalQuantity += quantity;
-          totalSubtotal += subTotal;
-        });
-    
-        const discount = 0; // Replace with the actual discount
-        const shipping = 0; // Replace with the actual shipping cost
-    
-        const total = totalSubtotal - discount + shipping;
-    
-        subTotalElement.textContent = ` ₹ ${totalSubtotal}`;
-        discountElement.textContent = `₹ ${discount}`;
-        shippingElement.textContent = ` ₹ ${shipping}`;
-        totalElement.textContent = ` ${total}`;
-      }
-    
-      // Attach event listeners to the plus and minus buttons for each input
-      quantityInputs.forEach(function (quantityInput) {
-        quantityInput.parentNode.querySelector('button[onclick^="this.parentNode.querySelector(\'input[type=number]\').stepDown()"]').addEventListener('click', updateTotal);
-        quantityInput.parentNode.querySelector('button[onclick^="this.parentNode.querySelector(\'input[type=number]\').stepUp()"]').addEventListener('click', updateTotal);
-      });
-    
-      const placeOrderLink = document.getElementById('place-order-link');
-      placeOrderLink.addEventListener('click', function (event) {
-        event.preventDefault(); // Prevent the default behavior of the link
-        const totalAmount = parseInt(totalElement.innerText.replace('₹', '').replace(',', '').trim());
-        sendTotalToBackend(totalAmount);
-        // Add any additional logic or redirection after sending the total to the backend
-      });
-    
-      // Initial update
-      updateTotal();
-    });
-    
-    // Function to send total to the backend
-    function sendTotalToBackend(total) {
-      fetch('/your-backend-endpoint/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({ total: total })
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          // Add code to handle the response if needed
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-    }
-    
-  </script>
-{% endcomment %}

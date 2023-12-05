@@ -1,7 +1,10 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login as auth_login,logout as auth_logout
 from django.views.decorators.cache import cache_control
+from django.db.models import Q
+from order.forms import OrderStatusForm
 from django.contrib import messages
+from order.models import Order,OrderProduct
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -35,13 +38,48 @@ def dashboard(request):
 
 def order(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'cus_admin/page-orders-1.html')
+        orders = Order.objects.all().order_by('-created_at')
+        context = {
+            'orders': orders,
+        }
+        return render(request,'cus_admin/page-orders.html',context)
     else:
          return redirect('admin_app:admin_login')
-def order_edit(request):
+    
+def order_details(request,id):
     if request.user.is_authenticated and request.user.is_superuser:
-        return render(request,'cus_admin/page-orders-detail.html')
+        order = Order.objects.get(id=id)
+        order_product = OrderProduct.objects.filter(order=order)
+        
+        if request.method == 'POST':
+            form = OrderStatusForm(request.POST,instance=order)
+            if form.is_valid():
+                form.save()
+        else:
+            form = OrderStatusForm(instance=order)
+            
+        context = {
+            'order':order,
+            'order_product':order_product,
+            'form': form,
+        }
+        
+        return render(request,'cus_admin/page-orders-details.html',context)
     else:
          return redirect('admin_app:admin_login' )
 
+def search(request):
+    query = request.POST.get('search')
 
+    if query:
+        orders = Order.objects.filter(
+            Q(order_no__icontains=query) |
+            Q(user__user_name__icontains=query) |
+            Q(status__icontains=query)
+        )
+    else:
+        return redirect('admin_app:order')
+    context = {
+        'orders': orders,
+    }
+    return render(request,'cus_admin/page-orders.html',context)

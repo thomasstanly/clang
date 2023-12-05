@@ -16,26 +16,19 @@
       </div>
       <div class="card mb-4">
         <header class="card-header">
-          <div class="row align-items-center">
-            <div class="col col-check flex-grow-0">
+          <div class="row">
+            <div class="col-lg-6 col-md-6 me-auto">
+              <form class="d-flex" action="#" method="POST">
+                {% csrf_token %}
+                <input name="search" class="bg-dark text-light rounded w-100" type="text" placeholder="Search..." class="form-control" />
+                <button type="submit" class="btn btn-secondary ms-2">Search</button>
+              </form>
             </div>
-            <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+            <div class="col-lg-2 col-6 col-md-3">
               <select class="form-select">
-                <option selected>All category</option>
-                <option>Electronics</option>
-                <option>Clothes</option>
-                <option>Automobile</option>
-              </select>
-            </div>
-            <div class="col-md-2 col-6">
-              <input type="date" value="02.05.2021" class="form-control" />
-            </div>
-            <div class="col-md-2 col-6">
-              <select class="form-select">
-                <option selected>Status</option>
-                <option>Active</option>
-                <option>Disabled</option>
-                <option>Show all</option>
+                <option>Show 20</option>
+                <option>Show 30</option>
+                <option>Show 40</option>
               </select>
             </div>
           </div>
@@ -45,7 +38,7 @@
             <article class="itemlist">
               <div class="row align-items-center">
                 <div class="col-lg-2 col-sm-2 col-4 flex-grow-1">
-                  <a class="itemside" href="{% url "product_app:variant" slug=product.product_slug %}">
+                  <a class="itemside" href="{% url 'product_app:variant' slug=product.product_slug %}">
                     {% comment %} <div class="left">
                       <img class="img-sm img-thumbnail" src="{% static 'user_assets/imgs/items/1.jpg' %}" alt="Item" />
                     </div> {% endcomment %}
@@ -55,10 +48,10 @@
                   </a>
                 </div>
                 <div class="col-lg-1 col-sm-2 col-4 col-price">
-                  <span>{{product.product_brand}}</span>
+                  <span>{{ product.product_brand }}</span>
                 </div>
                 <div class="col-lg-2 col-sm-2 col-4 col-price">
-                  <span>{{product.category_id}}</span>
+                  <span>{{ product.category_id }}</span>
                 </div>
                 <div class="col-lg-2 col-sm-1 col-2 col-status">
                   <form action="{% url 'product_app:product_status' slug=product.product_slug %}" method="POST">
@@ -73,11 +66,11 @@
                   </form>
                 </div>
                 <div class="col-lg-2 col-sm-2 col-4 col-date">
-                  <span>{{product.created_at}}</span>
+                  <span>{{ product.created_at }}</span>
                 </div>
                 <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
                   <a href="{% url 'product_app:product_edit' id=product.id %}" class="btn btn-sm font-sm rounded btn-brand"><i class="material-icons md-edit"></i> Edit</a>
-                  <a href="{% url "product_app:delete_product" slug=product.product_slug %}" class="delete-variant-btn btn btn-sm font-sm btn-light rounded" data-category-name="{{product.product_name}}"><i class="material-icons md-delete_forever"></i> Delete</a>
+                  <a href="{% url 'product_app:delete_product' slug=product.product_slug %}" class="delete-variant-btn btn btn-sm font-sm btn-light rounded" data-category-name="{{ product.product_name }}"><i class="material-icons md-delete_forever"></i> Delete</a>
                 </div>
               </div> <!-- row .// -->
             </article> <!-- itemlist .// -->
@@ -112,30 +105,30 @@
   </main>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-       document.querySelectorAll('.delete-variant-btn').forEach(function (btn) {
-          btn.addEventListener('click', function (event) {
-             event.preventDefault();
- 
-             const deleteUrl = event.currentTarget.getAttribute('href');
-             const categoryName = event.currentTarget.getAttribute('data-category-name');
- 
-             // Display SweetAlert confirmation dialog
-             Swal.fire({
-                title: 'Are you sure?',
-                text: `You want to delete ${categoryName}`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Delete'
-             }).then((result) => {
-                if (result.isConfirmed) {
-                   // If confirmed, proceed with the delete action
-                   window.location.href = deleteUrl;
-                }
-             });
-          });
-       });
-    });
- </script>
+      document.querySelectorAll('.delete-variant-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (event) {
+          event.preventDefault()
+    
+          const deleteUrl = event.currentTarget.getAttribute('href')
+          const categoryName = event.currentTarget.getAttribute('data-category-name')
+    
+          // Display SweetAlert confirmation dialog
+          Swal.fire({
+            title: 'Are you sure?',
+            text: `You want to delete ${categoryName}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Delete'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // If confirmed, proceed with the delete action
+              window.location.href = deleteUrl
+            }
+          })
+        })
+      })
+    })
+  </script>
 {% endblock %}

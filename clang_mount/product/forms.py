@@ -1,5 +1,7 @@
 from django import forms
 from .models import Brand, Product, Product_varient,product_image,attribute,attribute_values
+from django.core.exceptions import ValidationError
+from django.contrib import messages
 
 
 
@@ -64,4 +66,13 @@ class Product_varient_form(forms.ModelForm):
         model = Product_varient
         fields = '__all__'
         exclude = ['vari_is_active','attribute_name', 'varient_slug']
-
+        widgets = {
+            'discount_percentage': forms.TextInput(attrs={'min': 0, 'max': 100}),
+            'description': forms.Textarea(),
+        }
+    
+    def clean_discount_percentage(self):                                # cleanning method syntax clean_<name of the field>
+        discount_percentage = self.cleaned_data['discount_percentage']
+        if not (0 <= discount_percentage <= 100):
+            raise ValidationError("Dis. percentage between 0 - 100.")
+        return discount_percentage

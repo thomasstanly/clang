@@ -1,0 +1,70 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block content %}
+  <main class="main">
+    <section class="mt-50 mb-50">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-9">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col" class="h5">Shopping Bag</th>
+                    <th scope="col" class="text-center">Price</th>
+                    <th scope="col" class="text-center">Discount</th>
+                    <th scope="col" class="text-center">Quantity</th>
+                  </tr>
+                </thead>
+                {% for product in products %}
+                  <tbody>
+                    <tr>
+                      <th scope="row">
+                        <div class="d-flex align-items-center">
+                          <a href="{% url "shop_app:product_details" slug=product.product.varient_slug %}"><img src="{{ product.product.thumbnail_image.url }}" class="img-fluid rounded-3" style="width: 120px;" alt="Book" /></a>
+                          <div class="flex-column ms-4">
+                            <p class="mb-2">{{ product.product.product_name }}</p>
+                            <p class="mb-0">{{ product.product.product_name.product_brand }}</p>
+                          </div>
+                        </div>
+                      </th>
+                      <td class="align-middle text-center">
+                        <p class="mb-0" style="font-weight: 500;">₹ {{ product.product.price }}</p>
+                      </td>
+                      <td class="align-middle text-center">
+                        <p class="mb-0" style="font-weight: 500;">{{ product.product.discount_percentage}} %</p>
+                      </td>
+                      <td class="align-middle text-center">
+                        <p class="mb-0" style="font-weight: 500;">{{ product.quantity }} </p>
+                      </td>
+                    </tr>
+                  </tbody>
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+          <div class="col-lg-3 primary-sidebar">
+            <div class="widget-category mb-30">
+              <h5 class="section-title style-1 mb-30 wow fadeIn animated">Cart total</h5>
+              <div class="d-flex justify-content-between">
+                <p>Sub-total</p>
+                <p id="sub-total">₹ {{ order.sub_total }}</p>
+              </div>
+              <div class="d-flex justify-content-between">
+                <p>shipping</p>
+                <p id="discount">₹ {{ order.shipping }}</p>
+              </div>
+              <hr />
+              <div class="d-flex justify-content-between">
+                <p class="fw-bolder fs-5">Total</p>
+                <p class="fs-5">
+                  ₹ <span class="fw-bolder" id="total">{{ order.grand_total }}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}

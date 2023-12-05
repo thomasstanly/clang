@@ -28,7 +28,7 @@ class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
         fields = '__all__'
-        exclude = ['user']
+        exclude = ['user','created_At']
 
 class PasswordForm(PasswordChangeForm):
     def __init__(self,*args, **kwargs):

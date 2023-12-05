@@ -472,7 +472,7 @@ input[type=number]:focus,
 }
 
 .border {
-  border: 1px solid #474947 !important;
+  border: 1px solid #474947;
 }
 
 .box-shadow-outer-6 {
@@ -1021,15 +1021,16 @@ button[type='submit']:hover {
   font-size: 14px;
 }
 
-.btn,
-.button {
+
+.btn {
   display: inline-block;
   border: 1px solid transparent;
   font-size: 14px;
   font-weight: 700;
   padding: 12px 30px;
   border-radius: 4px;
-
+  color: #fff;
+  background-color: #918c8c;
   cursor: pointer;
   -webkit-transition: all 300ms linear 0s;
   transition: all 300ms linear 0s;
@@ -4891,14 +4892,14 @@ table .product-thumbnail img {
   width: 10px;
   border-radius: 100%;
   position: absolute;
-  top: 8px;
-  left: 3px;
+  top: 8.3px;
+  left: 4.7px;
   opacity: 0;
 }
 
 .custome-radio input[type="radio"]:checked+.form-check-label::after {
   opacity: 1;
-  background-color: #088178;
+  background-color: #000000;
 }
 
 .related-products .product-img-action-wrap {
@@ -10269,4 +10270,3 @@ span.fi-rs-apps {
     height: 100vh !important;
   }
 }
-

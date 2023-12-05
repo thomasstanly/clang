@@ -142,7 +142,7 @@ def attribute_value_status(request,id):
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)
 def product(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        products = Product.objects.all()
+        products = Product.objects.all().order_by('-created_at')
         context = {
             'products' : products
         }
@@ -283,7 +283,7 @@ def variant_edit(request,slug,p_slug):
         product = Product.objects.get(product_slug=p_slug)
         variant = Product_varient.objects.get(varient_slug=slug)
         variant_image = product_image.objects.filter(varient_id = variant)
-        print(variant_image)
+        
         form = Product_varient_form(instance=variant)
         if request.method == 'POST':
             form = Product_varient_form(request.POST,request.FILES,instance=variant)
@@ -314,7 +314,6 @@ def delete_variant(request,slug,p_slug):
         return redirect('product_app:admin_login')
     
 def image_variant(request,id,slug,p_slug):
-    pass
     v_image = product_image.objects.get(id = id)
     v_image.delete()
     return redirect('product_app:variant_edit',slug,p_slug)
