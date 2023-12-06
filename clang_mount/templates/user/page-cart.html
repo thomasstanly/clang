@@ -41,12 +41,16 @@
                         </td>
                         <td class="align-middle text-center">
                           <div class="d-flex border rounded justify-content-between mx-auto w-75">
-                            <button class="btn btn-link px-3 update-cart max-minus" data-item="{{ item.id }}" onclick="this.parentNode.querySelector('input[type=number]').stepDown()"><i class="fas fa-minus"></i></button>
+                            <button class="btn btn-link px-3 update-cart max-minus" data-item="{{ item.id }}" onclick="this.parentNode.querySelector('input[type=number]').stepDown()" type="button"><i class="fas fa-minus"></i></button>
 
                             <span class="w-25">   </span>
                             <input class="form-control w-50 p-1 quantity-input quantity-input-{{ item.id }}" id="form1" min="1" name="quantity" data-max="{{ item.product.stock }}" value="{{ item.quantity }}" type="number" />
 
-                            <button class="btn btn-link px-3 update-cart max-plus" data-item="{{ item.id }}" onclick="this.parentNode.querySelector('input[type=number]').stepUp()"><i class="fas fa-plus"></i></button>
+                            {% if item.quantity == item.product.stock %}
+                            <button class="btn btn-link px-3 update-cart max-plus" data-item="{{ item.id }}" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" type="button" disabled><i class="fas fa-plus"></i></button>
+                            {% else %}
+                            <button class="btn btn-link px-3 update-cart max-plus" data-item="{{ item.id }}" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" type="button"><i class="fas fa-plus"></i></button>
+                            {% endif %}
                           </div>
                         </td>
                         <td class="align-middle text-center">
