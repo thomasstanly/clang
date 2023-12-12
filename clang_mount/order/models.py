@@ -2,6 +2,7 @@ from django.db import models
 from admin_side.models import User
 from account.models import Address
 from product.models import Product_varient
+from coupon.models import Coupon
 # Create your models here.
 
 class Payment(models.Model):
@@ -10,8 +11,9 @@ class Payment(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     payment_id = models.CharField(max_length=100, null=True, blank=True)
     payment_order_id = models.CharField(max_length=100, null=True, blank=True)
+    payment_signature = models.CharField(max_length=100,null=True,blank=True)
     payment_method = models.CharField(choices=payment_method, max_length=100)
-    amount_paid = models.CharField(max_length=30)
+    amount_paid = models.DecimalField(max_digits=12,decimal_places=2)
     status = models.CharField(choices=payment_status, max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -19,11 +21,12 @@ class Payment(models.Model):
         return self.payment_id
 
 class Order(models.Model):
-    order_status = (("PROCESSING","Processing"),("DISPATCHED","Dispatched"),("OUT OF DELIVERY","Out of delivery"),("CANCELLED","Cancelled"),("RETURNED","Returned"))
+    order_status = (("PROCESSING","Processing"),("DISPATCHED","Dispatched"),("OUT FOR DELIVERY","Out for delivery"),("CANCELLED","Cancelled"),("RETURNED","Returned"),("DELIVERED","Delivered"))
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     payment = models.ForeignKey(Payment,on_delete=models.SET_NULL,null=True,blank=True)
-    order_no = models.CharField(max_length=100)
+    order_no = models.CharField(max_length=100,null=True,blank=True,unique=True)
     delivery_address = models.ForeignKey(Address,on_delete=models.SET_NULL,null=True,)
+    coupon = models.ForeignKey(Coupon,on_delete=models.SET_NULL,null=True,blank=True)
     sub_total = models.DecimalField(max_digits=12,decimal_places=2,null=True,blank=True)
     shipping = models.DecimalField(max_digits=12,decimal_places=2,null=True,blank=True)
     grand_total = models.DecimalField(max_digits=12,decimal_places=2)

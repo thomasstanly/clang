@@ -153,7 +153,7 @@ $(document).on('click','.radio-button',function(e){
         },
         success: function (data) {
             if (data.success) {
-                console.log(data.success)
+                console.log(data.success) 
             } else {
                console.error('not success')
             }

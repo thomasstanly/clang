@@ -1,6 +1,7 @@
 from django.db import models
 from admin_side.models import User
 from product.models import Product_varient
+from coupon.models import Coupon
 import uuid
 
 # Create your models here.
@@ -33,3 +34,6 @@ class Wishlist(models.Model):
     
     def __str__(self):
         return self.product.product_name
+    
+
+

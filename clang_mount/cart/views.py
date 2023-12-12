@@ -5,8 +5,11 @@ from django.http import JsonResponse
 from product.models import Product_varient
 from account.forms import AddressForm
 from .models import Cart, CartItems, Wishlist
+from order.models import Order
+from coupon.models import Coupon
 from account.models import Address
 from django.db.models import Q,Count
+import uuid
 
 # Create your views here.    
 def cart_list(request):
@@ -118,6 +121,10 @@ def delete_cart_item(request,id):
     if request.user.is_authenticated:
         item = CartItems.objects.get(id=id)
         item.delete()
+        cart = Cart.objects.get(user=request.user)
+        cart.coupon = None
+        cart.save()
+
         return redirect('cart_app:cart_list')
     else:
         if 'cart' in request.session:
@@ -175,12 +182,14 @@ def delete_wishlist(request,slug):
 def checkout(request):
     if request.user.is_authenticated:
 
+        if request.POST.get('action') == 'POST':
+            request.session['address_id'] = request.POST.get('address')
+            print(request.session['address_id'])
+            return JsonResponse({'success': True})
+ 
+        cart = Cart.objects.get(user = request.user,complete=False)
         
-        try:
-            cart = Cart.objects.get(user = request.user,complete=False)
-        except Cart.DoesNotExist:
-            return redirect('cart_app:cart_list')
-        
+        coupons = Coupon.objects.filter(is_active=True).order_by('-created_at')
         count = CartItems.objects.filter(cart = cart).count()
         if count == 0:
             return redirect('cart_app:cart_list')
@@ -200,10 +209,19 @@ def checkout(request):
 
         sub_total = sub_total - dis_total
         total = shipping + sub_total
-
+        
+        
+        try:
+            select_coupon = Coupon.objects.get(coupon_code =request.session['coupon'])
+            value = (total * select_coupon.dis_percentage)/100
+            total = round(total - value,2)
+            
+        except:
+            pass
+        
         addresses = Address.objects.filter(user = request.user).order_by('-created_at')
         address_form = AddressForm()
-
+        
         context = {
             'items':items,
             'sub_total': sub_total,
@@ -213,13 +231,40 @@ def checkout(request):
             'addresses':addresses,
             'user': request.user,
             'address_form':address_form,
+            'coupons':coupons,
+            'coupon_value':request.session.get('coupon', None),
         }
-        if request.POST.get('action') == 'POST':
-            request.session['address_id'] = request.POST.get('address')
-            
-            return JsonResponse({'success': True})
-
+        
     return render(request,'user/shop-checkout.html',context)
+
+def coupon_verfication(request):
+    if request.method == "POST":
+            coupon_value = request.POST['coupon-code']
+            print(coupon_value)
+
+            try: 
+                coupon = Coupon.objects.get(coupon_code = coupon_value)
+                request.session['coupon'] = coupon.coupon_code
+            except Coupon.DoesNotExist:
+                return redirect('cart_app:checkout')
+            
+            cart = Cart.objects.get(user=request.user)
+            items = CartItems.objects.filter(cart = cart)
+            sub_total = sum(item.sub_total() for item in items)
+            dis_total = sum(item.discount() for item in items)
+
+            shipping = 0
+            if sub_total < 30000:
+                shipping = (sub_total * 20)/1000
+
+            sub_total = sub_total - dis_total
+            total = shipping + sub_total
+            
+            if total < coupon.min_amount:
+                messages.warning(request,'The coupon has minimum value!')
+                return redirect('cart_app:checkout')
+            messages.success(request,'Coupon added successfully')
+            return redirect('cart_app:checkout')
 
 def address(request,id):
     user = request.user
@@ -230,7 +275,6 @@ def address(request,id):
     
     if request.method == 'POST':
         form = AddressForm(request.POST)
-        print(form)
         if form.is_valid():
             address = form.save(commit=False)
             address.user = user
@@ -239,7 +283,8 @@ def address(request,id):
         else:
             for field, errors in form.errors.items():
                 for error in errors:
-                    # Append the help text to the error message
                     messages.error(request, f"{error} {form.fields[field].help_text}")
     
         return redirect('cart_app:checkout')
+    
+

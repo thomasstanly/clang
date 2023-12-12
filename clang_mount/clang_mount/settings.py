@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'shop.apps.ShopConfig',
     'order.apps.OrderConfig',
+    'coupon.apps.CouponConfig',
 ]
 
 MIDDLEWARE = [
@@ -145,3 +146,7 @@ SESSION_COOKIE_NAME = 'user_session_id'
 
 # For admin authentication
 ADMIN_SESSION_COOKIE_NAME = 'admin_session_id'
+
+#RAZORPAY
+KEY = 'rzp_test_DadhvgCTL7p70u'
+SECRET_KEY = 'o7iNqzNVyDMRokNUTNazpAVS'

@@ -1,0 +1,130 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block content %}
+  <main>
+    <div class="container w-75">
+      <div class="row">
+        <div class="my-5">
+          <p class="h1">Order Summery</p>
+        </div>
+        <table class="table table-striped border">
+          <thead>
+            <tr>
+              <th scope="col" class="w-25" ></th>
+              <th scope="col" class="text-center" style="width: 5vw;">Product name</th>
+              <th scope="col" class="text-center" style="width: 5vw;">Price</th>
+              <th scope="col" class="text-center" style="width: 5vw;">Discount</th>
+              <th scope="col" class="text-center" style="width: 5vw;">Quantity</th>
+              <th scope="col" class="text-end" style="width: 5vw;padding-right: 2vw;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+              <tr class="border">
+                <th scope="row" class="w-25">
+                  <img src="{{ item.product.thumbnail_image.url }}" class="img-fluid rounded-3" style="width: 120px;" alt="Book" />
+                </th>
+                <td class="text-center">{{ item.product.product_name }}</td>
+                <td class="text-center">₹ {{ item.product.price }}</td>
+                <td class="text-center">{{ item.product.discount_percentage }} %</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-end" style="padding-right: 2vw;">₹ {{ item.total_price }}</td>
+              </tr>
+            {% endfor %}
+            <tr class="border">
+              <th colspan="5" class="text-center">Coupon Code</th>
+              <td class="text-end" style="padding-right: 2vw;">{{ order.coupon.coupon_code }}</td>
+            </tr>
+            <tr class="border">
+              <th colspan="5" class="text-center">Shipping</th>
+              <td class="text-end" style="padding-right: 2vw;">₹ {{ order.shipping }}</td>
+            </tr>
+            <tr class="border">
+              <th colspan="5" class="text-center">Grand Total</th>
+              <td class="text-end" style="padding-right: 2vw;">₹ {{ order.grand_total }}</td>
+            </tr>
+            <tr class="">
+              <td colspan="5" class="border">
+                <table class="table mb-0">
+                  <tr>
+                    <td><center>Delivery Address</center></td>
+                  </tr>
+                  <tr>
+                    <td style="padding-left: 4vw;">
+                      {{ order.delivery_address.address_type|upper}} <br>
+                      {{ order.delivery_address.phone }} <br>
+                      {{ order.delivery_address.address }} <br>
+                      {{ order.delivery_address.country }}, {{ order.delivery_address.state }}, 
+                      <br>{{ order.delivery_address.city }}, {{ order.delivery_address.pin_code }}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td class="text-center align-top">
+                      {% if payment_method == 'COD' %}
+                      Cash On Delivery
+                      {%else%}
+                      Online Payment
+                      {%endif%}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-center">
+                      {% if payment_method == 'COD' %}
+                    <a href="{% url "order_app:success" %}"  class="bg-info border-0 rounded-2 py-2 px-3 text-light">Apply</a>
+                    {% else %}
+                    <button id="rzp-button1" class="bg-info border-0 rounded-2 py-2 px-3 text-light">Pay with Razorpay</button>
+                    {% endif %}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+var options = {
+    "key": "rzp_test_DadhvgCTL7p70u", // Enter the Key ID generated from the Dashboard
+    "amount": "{{payment.amount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Clang Mount",
+    "description": "Test Transaction",
+    "image": "{% static 'user_assets/css/main.css' %}",
+    "order_id": "{{payment.id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+        window.location.href = `{{success}}?payment_id=${response.razorpay_payment_id}&razorpay_order_id=${response.razorpay_order_id}&payment_sign=${response.razorpay_signature}`
+        //alert(response.razorpay_payment_id);
+        //alert(response.razorpay_order_id);
+        //alert(response.razorpay_signature)
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+      window.location.href=`{{failed_url}}?error_code=${response.error.code}&error_description=${response.error.description}&error_reason=${response.error.reason}&error_payment_id=${response.error.metadata.payment_id}&error_order_id=${response.error.metadata.order_id}&method=COD`
+      //alert(response.error.code);
+      // alert(response.error.description);
+      // alert(response.error.source);
+      // alert(response.error.step);
+      // alert(response.error.reason);
+      // alert(response.error.metadata.order_id);
+      // alert(response.error.metadata.payment_id);
+});
+document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+</script> 
+{% endblock %}

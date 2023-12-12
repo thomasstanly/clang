@@ -1,0 +1,81 @@
+{% extends 'cus_admin/base.html' %}
+{% load static %}
+{% block content %}
+  <main class="main-wrap">
+    {% include 'cus_admin/header.html' %}
+    <section class="content-main">
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Order List</h2>
+          <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Download
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url "sales_app:sales_report_pdf" %}">PDF</a></li>
+            <li><a class="dropdown-item" href="{% url "sales_app:sales_report_excel" %}">Excel</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <header class="card-header">
+          <div class="row">
+            <div class="col-lg-6 col-md-6 me-auto">
+              <form class="d-flex" action="{% url 'admin_app:search' %}" method="POST">
+                {% csrf_token %}
+                <input name="search" class="bg-dark text-light rounded w-100" type="text" placeholder="Search..." class="form-control" />
+                <button type="submit" class="btn btn-secondary ms-2">Search</button>
+              </form>
+            </div>
+          </div>
+        </header> <!-- card-header end// -->
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Order ID</th>
+                  <th scope="col">Created</th>
+                  <th scope="col">Userame</th>
+                  <th scope="col">Product</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Payment Method</th>
+                  <th scope="col">Order Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for product in order_product %}
+                  <tr>
+                    <td>{{ product.order.order_no }}</td>
+                    <td>{{ product.created_at }}</td>
+                    <td><b>{{ product.order.user.first_name }} {{ product.order.user.last_name }}</b></td>
+                    <td>{{ product.product.product_name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>₹ {{ product.product_price }}</td>                    
+                    <td>{{ product.order.payment.payment_method }}</td>
+                    <td>{{ product.order.status }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div> <!-- table-responsive //end -->
+        </div> <!-- card-body end// -->
+      </div> <!-- card end// -->
+    </section> <!-- content-main end// -->
+    <footer class="main-footer font-xs">
+      <div class="row pb-30 pt-15">
+        <div class="col-sm-6">
+          <script>
+            document.write(new Date().getFullYear())
+          </script>©, Evara - HTML Ecommerce Template .
+        </div>
+        <div class="col-sm-6">
+          <div class="text-sm-end">All rights reserved</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+{% endblock %}

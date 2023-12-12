@@ -35,8 +35,16 @@ def signup(request):
                 return redirect('user_app:signup')
         except:
                 pass
+        if ' ' in user:
+            messages.warning(request, "Username cannot contain whitespaces")
+            return redirect('user_app:signup')
+
+        if ' ' in passw:
+            messages.warning(request, "Password cannot contain whitespaces")
+            return redirect('user_app:signup')
+        
         if not email or '@' not in email:
-            messages.info(request,"Email id is not correct")
+            messages.info(request,"Email id is not in correct format")
             return redirect('user_app:signup')
         if passw != conpass:
             messages.warning(request,"Password is incorrect")
@@ -48,7 +56,7 @@ def signup(request):
         request.session['password'] = passw
         request.session['email'] = email
         return redirect('user_app:otp_verification')
-    return render(request,'user/page-login-register.html')
+    return render(request,'user/page-login-register.html') 
 
 # otp sending take place
 def otp_verification(request):

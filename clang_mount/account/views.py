@@ -17,7 +17,7 @@ def account(request):
             return redirect('admin_app:admin_login')
         user = request.user
         address = Address.objects.filter(user = user)
-        order = Order.objects.filter(user = user).order_by('-created_at')
+        order = Order.objects.filter(user = user,is_ordered = True).order_by('-created_at')
         profile_form = profileForm(instance=user)
         address_form = AddressForm()
         password_form = PasswordForm(user)

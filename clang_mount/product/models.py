@@ -1,7 +1,7 @@
 from django.db import models
 from pro_category.models import Categories
 from django.utils.text import slugify
-
+from PIL import Image
 # Create your models here.
 
 class Brand(models.Model):
@@ -31,6 +31,11 @@ class Product(models.Model):
         self.product_slug = slugify(slug)
         super(Product,self).save(*args, **kwargs)
 
+        if not self.is_active:
+            self.product_vareint.filter(vari_is_active=True).update(vari_is_active=False)
+        else:
+            self.product_vareint.filter(vari_is_active=False).update(vari_is_active=True)
+
 class attribute(models.Model):
     atrribute_name = models.CharField(max_length=50,unique=True)
     is_active = models.BooleanField(default=True)
@@ -48,7 +53,7 @@ class attribute_values(models.Model):
 
 
 class Product_varient(models.Model):
-    product_name = models.ForeignKey(Product,on_delete=models.CASCADE)
+    product_name = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='product_vareint')
     attribute_name = models.ManyToManyField(attribute_values,max_length=100)
     stock = models.IntegerField(default=0)
     sku_id = models.CharField(max_length=30,unique=True,default='')
@@ -76,6 +81,17 @@ class Product_varient(models.Model):
         self.varient_slug = slugify(slug)
         
         super(Product_varient,self).save(*args, **kwargs)
+       
+
+        if self.thumbnail_image:
+            img = Image.open(self.thumbnail_image.path)
+            size = (522,522)
+            img=img.resize(size, Image.BOX)
+            img.save(self.thumbnail_image.path)
+
+
+        
+
 
 class product_image(models.Model):
     varient_id = models.ForeignKey(Product_varient, on_delete=models.CASCADE)
@@ -84,3 +100,11 @@ class product_image(models.Model):
     def __str__(self):
         return f"{self.image}"
     
+    def save(self,*args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.image:
+            img = Image.open(self.image.path)
+            size = (522,522)
+            img=img.resize(size, Image.BOX)
+            img.save(self.image.path)

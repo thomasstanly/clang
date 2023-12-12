@@ -13,5 +13,6 @@ urlpatterns = [
     path('wishlist-delete/<slug:slug>',views.delete_wishlist,name='delete_wishlist'),
 
     path('checkout',views.checkout,name='checkout'),
+    path('checkout/coupon',views.coupon_verfication,name='coupon_verif'),
     path('address/<int:id>',views.address,name='address'),
 ]

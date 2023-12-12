@@ -247,6 +247,7 @@ def variant_add(request,slug):
                 print(multi_image)
                 for image in multi_image:
                     product_image.objects.create(varient_id=variant,image=image)
+                    product_image.save()
                 messages.success(request,"variant Added")
                 return redirect('product_app:variant',slug)
 
