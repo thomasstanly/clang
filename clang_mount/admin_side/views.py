@@ -61,6 +61,8 @@ def dashboard(request):
             monthly_sales_str = ",".join(map(str, monthly_sales_data))
             yearly_sales_str = ",".join(map(str, yearly_sales_data))
 
+            print(weekly_sales_str)
+
             context = {
                 'revenue': total_revenue,
                 'orders_count':orders_count,
@@ -82,9 +84,9 @@ def dashboard(request):
 def get_weekly_sales():
     today = timezone.now()
     
-    start_of_week = today - timedelta(days=today.weekday() + 1)
+    start_of_week = today - timedelta(days=today.weekday()+2)
     end_of_week = start_of_week + timedelta(days=6)
-
+    print(start_of_week,'\n',end_of_week)
     weekly_sales = Payment.objects.filter(
         created_at__range=[start_of_week, end_of_week],
         status="SUCCESS"
@@ -93,7 +95,7 @@ def get_weekly_sales():
     weekly_sales_values = [0] * 7
     for entry in weekly_sales:
   
-        adjusted_index = (entry['day_of_week'] - 2) % 7
+        adjusted_index = entry['day_of_week']-1
         weekly_sales_values[adjusted_index] = entry['weekly_total']
 
     return weekly_sales_values

@@ -203,6 +203,7 @@ def payment_failed(request):
     'error_payment_id': request.GET.get('error_payment_id'),
     'error_order_id': request.GET.get('error_order_id')
     }
-    return render(request, 'store/payment_failed.html',context)
+    messages.success(request,'payment failed')
+    return redirect('shop_app:index')
 
       

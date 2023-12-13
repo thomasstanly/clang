@@ -17,15 +17,13 @@
 
             data: {
                 labels: [
-
+                    'Sunday',
                     'Monday',
                     'Tuesday',
                     'Wednesday',
                     'Thursday',
                     'Friday',
                     'Saturday',
-                    'Sunday'
-
                 ],
                 datasets: [{
                     label: 'Weekly',

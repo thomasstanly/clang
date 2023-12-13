@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect,HttpResponse
+from django.views.decorators.cache import cache_control
 from django.db.models import Sum
 from django.contrib import messages
 from django.http import JsonResponse
@@ -11,7 +12,8 @@ from account.models import Address
 from django.db.models import Q,Count
 import uuid
 
-# Create your views here.    
+# Create your views here.   
+@cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def cart_list(request):
     if request.user.is_authenticated:
         try:
@@ -135,7 +137,7 @@ def delete_cart_item(request,id):
             return redirect('cart_app:cart_list')
 
 # views for wishlist page
-   
+@cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def wishlist(request):
     if request.user.is_authenticated:
         wishlist = Wishlist.objects.filter(user = request.user)

@@ -2,11 +2,11 @@
 {% load static %}
 {% block content %}
   <main class="main-wrap">
-    Brand_name{% include 'cus_admin/header.html' %}
+    {% include 'cus_admin/header.html' %}
     <section class="content-main">
       <div class="row">
         <div class="col-6">
-          <h2 class="content-title card-title">Category List</h2>
+          <h2 class="content-title card-title">Brand</h2>
         </div>
         <div class="card col-6">
           <form action="{% url 'product_app:add_brand' %}" method="POST" enctype="multipart/form-data">

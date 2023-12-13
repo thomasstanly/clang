@@ -6,8 +6,8 @@
     <section class="content-main">
       <div class="content-header">
         <div>
-          <h2 class="content-title card-title">Order List</h2>
-          <p>Lorem ipsum dolor sit amet.</p>
+          <h2 class="content-title card-title">Sales Report</h2>
+         
         </div>
         <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -22,12 +22,18 @@
       <div class="card mb-4">
         <header class="card-header">
           <div class="row">
-            <div class="col-lg-6 col-md-6 me-auto">
-              <form class="d-flex" action="{% url 'admin_app:search' %}" method="POST">
-                {% csrf_token %}
-                <input name="search" class="bg-dark text-light rounded w-100" type="text" placeholder="Search..." class="form-control" />
-                <button type="submit" class="btn btn-secondary ms-2">Search</button>
-              </form>
+        
+            <div class="col-lg-3 col-md-3 ">
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  sales report
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">weekly report</a></li>
+                  <li><a class="dropdown-item" href="{% url "sales_app:monthly" %}">monthly report</a></li>
+                  <li><a class="dropdown-item" href="#">yearly report</a></li>
+                </ul>
+              </div>
             </div>
           </div>
         </header> <!-- card-header end// -->

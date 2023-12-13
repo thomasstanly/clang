@@ -39,7 +39,7 @@
                   <p class="mb-1">
                     {{ order.user.user_name }} <br /> +{{ order.user.phone }}
                   </p>
-                  <a href="#">View profile</a>
+                  <a href="{% url "customer_app:customer_edit" id=order.user.id %}">View profile</a>
                 </div>
               </article>
             </div> <!-- col// -->

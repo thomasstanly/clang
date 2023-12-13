@@ -45,7 +45,7 @@ def search_product(request):
             Q(product_name__product_name__icontains=query) |
             Q(product_name__product_brand__Brand_name__icontains=query) |
             Q(product_name__category_id__category_title__icontains=query)
-            )
+            ).filter(vari_is_active=True)
         if not products.exists():
             return redirect('shop_app:home')
     else:
@@ -62,7 +62,7 @@ def search_product(request):
 
 
 def category_products(request, id):
-    products = Product_varient.objects.filter(product_name__category_id__id=id)
+    products = Product_varient.objects.filter(product_name__category_id__id=id).filter(vari_is_active=True)
     categories = Categories.objects.all()
 
     context = {
@@ -74,7 +74,7 @@ def category_products(request, id):
 
 
 def brand_products(request, id):
-    products = Product_varient.objects.filter(product_name__product_brand__id=id)
+    products = Product_varient.objects.filter(product_name__product_brand__id=id).filter(vari_is_active=True)
     categories = Categories.objects.all()
 
     context = {

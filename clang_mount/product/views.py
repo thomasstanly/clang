@@ -209,7 +209,7 @@ def delete_product(request,slug):
 def variant(request,slug):
     if request.user.is_authenticated and request.user.is_superuser:
         product = Product.objects.get(product_slug = slug)
-        variants = Product_varient.objects.filter(product_name=product)
+        variants = Product_varient.objects.filter(product_name=product).order_by('-created_at')
         context = {
             'product' : product,
             'variants' : variants
