@@ -1,4 +1,5 @@
 from .models import Cart,Wishlist
+from wallet.models import Wallet
 from django.db.models import Sum,Count
 
 def car_fuc(request):
@@ -35,3 +36,17 @@ def wishlist_func(request):
             'wishlist_count': count
     }
            
+def wallet_func(request):
+    
+    balance = 0
+    try:
+        if request.user.is_authenticated:
+            wallet = Wallet.objects.get(user=request.user)
+            balance = wallet.balance
+    except Wallet.DoesNotExist:
+        pass
+
+    return {
+        'balance':balance
+    }
+    

@@ -34,7 +34,10 @@
                         <button type="submit" class="btn btn-fill-out btn-block hover-up w-100" name="login">Log in</button>
                       </div>
                     </form>
-                    {% comment %}google{% endcomment %}
+                    <ul class="btn-login list_none text-center mb-15">
+                      <li><a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-google hover-up">Login With Google</a></li>
+
+                  </ul>
                     <p class="text-center mb-4">
                       Don't have account? <a href="{% url 'user_app:signup' %}">Sign up</a>
                     </p>

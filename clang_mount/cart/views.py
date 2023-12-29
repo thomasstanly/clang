@@ -9,6 +9,7 @@ from .models import Cart, CartItems, Wishlist
 from order.models import Order
 from coupon.models import Coupon
 from account.models import Address
+from wallet.models import Wallet,Wallet_Transaction
 from django.db.models import Q,Count
 import uuid
 
@@ -126,6 +127,13 @@ def delete_cart_item(request,id):
         cart = Cart.objects.get(user=request.user)
         cart.coupon = None
         cart.save()
+        try:
+            del request.session['address_id']
+            del request.session['order_id']
+            del request.session['payment']
+            del request.session['coupon']
+        except:
+            pass
 
         return redirect('cart_app:cart_list')
     else:
@@ -180,7 +188,7 @@ def delete_wishlist(request,slug):
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
 # views for checkout page
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def checkout(request):
     if request.user.is_authenticated:
 
@@ -220,7 +228,26 @@ def checkout(request):
             
         except:
             pass
-        
+
+        try:
+            if request.GET.get('action') == 'GET':
+                check = request.GET.get('check')
+                wallet = Wallet.objects.get(user=request.user,is_active=True)
+                balance = wallet.balance
+                grand_total = total
+                if check == 'true':
+                    if  wallet.balance >= grand_total:
+                        balance =  wallet.balance - grand_total
+                        grand_total = 0
+                    else:
+                        grand_total = grand_total - balance
+                        balance = 0
+                    return JsonResponse({'success':True,'grand_total':grand_total,'balance':balance})
+                else:
+                    return JsonResponse({'success':True,'grand_total':grand_total,'balance':balance})
+        except:
+            pass
+
         addresses = Address.objects.filter(user = request.user).order_by('-created_at')
         address_form = AddressForm()
         
@@ -263,6 +290,7 @@ def coupon_verfication(request):
             total = shipping + sub_total
             
             if total < coupon.min_amount:
+                del request.session['coupon']
                 messages.warning(request,'The coupon has minimum value!')
                 return redirect('cart_app:checkout')
             messages.success(request,'Coupon added successfully')

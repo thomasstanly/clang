@@ -149,7 +149,7 @@ $(document).on('click','.radio-button',function(e){
         data: {
             address: a_Id,
             csrfmiddlewaretoken: csrfToken,
-            action : 'POST'
+            action : 'POST' 
         },
         success: function (data) {
             if (data.success) {
@@ -165,4 +165,3 @@ $(document).on('click','.radio-button',function(e){
         }
     });
 });
-

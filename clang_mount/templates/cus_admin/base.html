@@ -57,17 +57,13 @@
           </a>
         </li>
         <li class="menu-item ">
-          <a class="menu-link" href="page-transactions-1.html">
+          <a class="menu-link" href="{% url "banner_app:banner" %}">
             <i class="icon material-icons md-monetization_on"></i>
-            <span class="text">Transactions</span>
+            <span class="text">Banner</span>
           </a>
-          <div class="submenu">
-            <a href="page-transactions-1.html">Transaction 1</a>
-            <a href="page-transactions-2.html">Transaction 2</a>
-          </div>
         </li>
         <li class="menu-item">
-          <a class="menu-link" href="page-reviews.html">
+          <a class="menu-link" href="#">
             <i class="icon material-icons md-comment"></i>
             <span class="text">Reviews</span>
           </a>
@@ -139,6 +135,34 @@
             });
         {% endfor %}
     {% endif %}
+  </script>
+  <script>
+    $(document).on('change','#product_status',function(e){
+      const status = $(this).val()
+      const pId = $(this).attr('data-item')
+      $.ajax({
+        type: "POST",
+        url: updateCartUrl, 
+        data: {
+            status: status,
+            id: pId,
+            csrfmiddlewaretoken: csrfToken,
+            action : 'POST'
+        },
+        success: function (data) {
+            if (data.success) {
+                console.log(data.success) 
+            } else {
+               console.error('not success')
+            }
+
+        },
+        error: function () {
+            // Handle error
+            console.error('AJAX request failed');
+        }
+      })
+    })
   </script>
   </body>
 </html>

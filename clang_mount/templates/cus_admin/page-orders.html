@@ -20,13 +20,6 @@
                 <button type="submit" class="btn btn-secondary ms-2">Search</button>
               </form>
             </div>
-            <div class="col-lg-2 col-6 col-md-3">
-              <select class="form-select">
-                <option>Show 20</option>
-                <option>Show 30</option>
-                <option>Show 40</option>
-              </select>
-            </div>
           </div>
         </header> <!-- card-header end// -->
         <div class="card-body">
@@ -35,11 +28,12 @@
               <thead>
                 <tr>
                   <th>#ID</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Total</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Date</th>
+                  <th  class="text-center" scope="col">Name</th>
+                  <th  class="text-center" scope="col">Email</th>
+                  <th  class="text-center" scope="col">Total</th>
+                  <th  class="text-center" scope="col">Payment Status</th>
+                  <th  class="text-center" scope="col">Date</th>
+                  <th  class="text-center" scope="col">Delivery Date</th>
                   <th scope="col" class="text-end">Action</th>
                 </tr>
               </thead>
@@ -47,15 +41,19 @@
                 {% for order in orders %}
                   <tr>
                     <td>{{ order.order_no }}</td>
-                    <td>
-                      <b>{{ order.user.first_name }}</b>
+                    <td  class="text-center">
+                      <b>{{ order.user.first_name }} {{ order.user.last_name }}</b>
                     </td>
-                    <td>{{ order.user }}</td>
-                    <td>{{ order.grand_total }}</td>
-                    <td>
+                    <td  class="text-center">{{ order.user }}</td>
+                    <td  class="text-center">{{ order.grand_total }}</td>
+                    <td  class="text-center">
+                      <span class="badge rounded-pill alert-warning">{{ order.payment.status }}</span>
+                    </td>
+                    {% comment %} <td  class="text-center">
                       <span class="badge rounded-pill alert-warning">{{ order.status }}</span>
-                    </td>
-                    <td>{{ order.created_at }}</td>
+                    </td> {% endcomment %}
+                    <td  class="text-center">{{ order.created_at }}</td>
+                    <td  class="text-center">{{ order.delivery_date }}</td>
                     <td class="text-end">
                       <a href="{% url 'admin_app:order_details' id=order.id %}" class="btn btn-md rounded font-sm">Detail</a>
                     </td>

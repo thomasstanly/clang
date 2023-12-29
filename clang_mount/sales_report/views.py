@@ -26,7 +26,7 @@ def sales_report(request):
 
 def sales_report_pdf(request):
     
-    orders = Order.objects.filter(status='DELIVERED')
+    orders = OrderProduct.objects.filter(status='DELIVERED')
 
     buffer = io.BytesIO()
 
@@ -45,7 +45,7 @@ def sales_report_pdf(request):
             str(product.quantity),
             str(product.product_price),
             product.order.payment.payment_method,
-            product.order.status,
+            product.status,
         ]
         elements.append(product_info)
 
@@ -88,7 +88,7 @@ def sales_report_excel(request):
             str(product.quantity),
             str(product.product_price),
             product.order.payment.payment_method,
-            product.order.status,
+            product.status,
         ]
         worksheet.append(product_info)
 

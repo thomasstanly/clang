@@ -10,5 +10,6 @@ urlpatterns = [
     path('login/change-password',views.Change_password,name='Change_password'),
     path('logout',views.logout, name='user_logout'),
     path('otp_verification',views.otp_verification,name="otp_verification"),
+
     
 ]

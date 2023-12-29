@@ -19,6 +19,8 @@
     <!-- Template CSS for user -->
     <link rel="stylesheet" href="{% static 'user_assets/css/main.css' %}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    <!-- CROPPER -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css">
     <title>
       {% block title %}
 
@@ -39,7 +41,7 @@
               <a href="{% url 'shop_app:index' %}"><img class="img-fluid" src="{% static 'user_assets/imgs/theme/logo1.png' %}" style="width:10vh;'%}" alt="logo" /></a>
             </div>
             <div class="search-style-2">
-              <form class="bg-white" action="{% url "shop_app:search_product" %}" method="POST">{% csrf_token %}
+              <form class="bg-white" action="{% url "shop_app:search_product" %}" method="GET">{% csrf_token %}
                 <input name="query" type="text" placeholder="Search for items…" />
                 <button type="submit" class="btn bg-dark"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg></i></button>
               </form>
@@ -57,16 +59,16 @@
                       <path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z" />
                     </svg>
                   </a>
-                  <div class="cart-dropdown-wrap cart-dropdown-hm2 " style="width: 10vw;">
+                  <div class="cart-dropdown-wrap cart-dropdown-hm2 " style="width: 15vw;">
                     <ul>
                       <li>
-                        <a class="dropdown-item" href="{% url "account_app:account" %}"><i class="material-icons md-perm_identity"></i>My account</a>
+                        <a class="dropdown-item" href="{% url "account_app:account" %}"><i class="fa-regular fa-user" style="color: #000000;"></i></i>&ensp;&ensp;My account</a>
                       </li>
                       <li>
-                        <a class="dropdown-item" href="#"><i class="material-icons md-account_balance_wallet"></i>Wallet</a>
+                        <a class="dropdown-item" href="{% url 'account_app:account' %}"><i class="fa-solid fa-wallet" style="color: #000000;"></i> &ensp;&ensp;Wallet &ensp;&ensp; &ensp;&ensp; ₹ {{balance}}</a>
                       </li>
                       <li>
-                        <a class="dropdown-item text-danger" href="{% url 'user_app:user_logout' %}"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                        <a class="dropdown-item text-danger" href="{% url 'user_app:user_logout' %}"><i class="fa-solid fa-right-from-bracket" style="color: #000000;"></i></i>&ensp;&ensp;Logout</a>
                       </li>
                     </ul>
                   </div>
@@ -297,6 +299,7 @@
     <script src="{% static 'admin_assets/js/vendors/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'admin_assets/js/vendors/jquery.fullscreen.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.js"></script>
   <script>
     {% if messages %}
         {% for message in messages %}
@@ -307,6 +310,73 @@
             });
         {% endfor %}
     {% endif %}
+  </script>
+  <script>
+    const alertBox = document.getElementById('alert-box')
+    const imageBox = document.getElementById('image-box')
+    const imageForm = document.getElementById('image-form')
+    const confirmBtn = document.getElementById('confirm-btn')
+    const input = document.getElementById('id_profile_image')
+    console.log(imageForm)
+    const csrf = document.getElementsByName('csrfmiddlewaretoken')
+
+    input.addEventListener('change',()=>{
+      
+      const img_data = input.files[0]
+      const url = URL.createObjectURL(img_data)
+      imageBox.innerHTML = `<img src="${url}" id="image">`
+
+      var $image = $('#image');
+
+      $image.cropper({
+        aspectRatio: 1,
+        crop: function(event) {
+          console.log(event.detail.x);
+          console.log(event.detail.y);
+          console.log(event.detail.width);
+          console.log(event.detail.height);
+          console.log(event.detail.rotate);
+          console.log(event.detail.scaleX);
+          console.log(event.detail.scaleY);
+        }
+
+      
+      });
+
+      // Get the Cropper.js instance after initialized
+      var cropper = $image.data('cropper');
+
+      confirmBtn.addEventListener('click', ()=>{
+          cropper.getCroppedCanvas().toBlob((blob) => {
+          const fd = new FormData()
+          fd.append('csrfmiddlewaretoken',csrf[0].value)
+          fd.append('profile_image',blob, 'my-image.jpg')
+            console.log(fd)
+          $.ajax({
+            type: 'POST',
+            url: imageForm.action,
+            enctype: 'multipart/form-data',
+            data: fd,
+            success: function(response){
+              location.reload();
+              setTimeout(function (){
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Success',
+                  text: response.message,
+                });
+              },3500)
+            },
+            error: function(response){
+              console.log(error)
+            },
+            cache:false,
+            contentType:false,
+            processData:false,
+          })
+        })
+      })
+    })
   </script>
   </body>
 </html>

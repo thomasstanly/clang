@@ -8,6 +8,42 @@
           <div class="col-lg-10 m-auto">
             <div class="row">
               <div class="col-md-4">
+                <div class="dashboard-menu mb-15 d-flex align-items-center justify-content-start">
+                  <div class="w-25 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    {% if image.profile_image %}
+                    <img class="rounded-circle p-2" src="{{ image.profile_image.url }}" alt="" />
+                    {% else %}
+                    <img class="rounded-circle p-2" src="{% static 'user_assets/imgs/page/images.png' %}" alt="" />
+                    {% endif %}
+                    
+                  </div>
+                  <div>
+                    <p class="ms-4 fs-5">{{ user.first_name|title }} {{ user.last_name|title }}</p>
+                  </div>
+                </div>
+                <!-- modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Profile Photo</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body d-flex">
+                        <div id="alert-box"></div>
+                        <div id="image-box"></div>
+                      </div>
+                      <div class="modal-footer">
+                        <form action="" id="image-form">
+                          {% csrf_token %}
+                          {{ form.profile_image }}
+                        </form>
+                        <button id="confirm-btn"  class="btn btn-primary">Save changes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="dashboard-menu">
                   <ul class="nav flex-column" role="tablist">
                     <li class="nav-item">
@@ -20,16 +56,13 @@
                       <a class="nav-link" id="password-tab" data-bs-toggle="tab" href="#password" role="tab" aria-controls="password" aria-selected="false"><i class="fi-rs-marker mr-10"></i>Change password</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" id="coupon-tab" data-bs-toggle="tab" href="#coupon" role="tab" aria-controls="coupon" aria-selected="false"><i class="fi-rs-ticket mr-10"></i>Coupon</a>
+                      <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="false"><i class="fa-solid fa-wallet mr-10"></i>Wallet</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false"><i class="fi-rs-shopping-bag mr-10"></i>Orders</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" id="track-tab" data-bs-toggle="tab" href="#track" role="tab" aria-controls="track" aria-selected="false"><i class="fi-rs-shopping-bag mr-10"></i>Track order</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="page-login-register.html"><i class="fi-rs-sign-out mr-10"></i>Logout</a>
+                      <a class="nav-link"  href="{% url 'user_app:user_logout' %}"><i class="fi-rs-sign-out mr-10"></i>Logout</a>
                     </li>
                   </ul>
                 </div>
@@ -215,8 +248,8 @@
                               <thead>
                                 <tr>
                                   <th>Order</th>
-                                  <th>Date</th>
-                                  <th>Status</th>
+                                  <th>Order Placed</th>
+                                  <th>Delivery Date</th>
                                   <th>Total</th>
                                 </tr>
                               </thead>
@@ -224,23 +257,26 @@
                                 {% for order in orders %}
                                   <tr>
                                     <td>{{ order.order_no }}</td>
-                                    <td>{{ order.created_at }}</td>
-                                    <td>{{ order.status }}</td>
-                                    <td>₹ {{ order.grand_total }}</td> {% comment %}for item{% endcomment %}
+                                    <td>{{ order.created_at | date:"F j, Y"}}</td>
+                                    <td>{{ order.delivery_date | date:"F j, Y"}}</td>
+                                    <td>₹ {{ order.total }}</td>
                                     <td>
                                       <a href="{% url 'account_app:order_details' id=order.id %}" class="btn-small d-block">View</a>
                                     </td>
                                     <td>
-                                      {% if order.status != 'CANCELLED' %}
-                                        <a class="btn p-1" href="{% url 'account_app:cancel_order' id=order.id %}" class="text-dark">cancel</a>
+                                      <a target="_blank" href="{% url "order_app:generate_invoice" id=order.id %}">invoice</a>
+                                    </td>
+                                    {% comment %} <td>
+                                      {% if order.status != 'CANCELLED' and order.status != 'DELIVERED' and order.status != 'OUT FOR DELIVERY' %}
+                                        <a class="p-1" href="{% url 'account_app:cancel_order' id=order.id %}" class="text-dark"><button class="btn-primary border-0 rounded-3">cancel</button></a>
                                       {% else %}
-                                        <a id="disable_cancel{{ order.order_no }}" class="btn p-1" href="{% url 'account_app:cancel_order' id=order.id %}" class="text-dark">cancel</a>
+                                        <a id="disable_cancel{{ order.order_no }}" class="p-1" href="{% url 'account_app:cancel_order' id=order.id %}" class="text-dark"><button class="btn-secondary border-0 rounded-3">cancel</button></a>
                                         <script>
                                           // Disable the link using JavaScript
                                           document.getElementById('disable_cancel{{ order.order_no}}').style.pointerEvents = 'none'
                                         </script>
                                       {% endif %}
-                                    </td>
+                                    </td> {% endcomment %}
                                   </tr>
                                 {% endfor %}
                               </tbody>
@@ -254,36 +290,36 @@
                       </div>
                     </div>
                   </div>
-                  <div class="tab-pane fade" id="coupon" role="tabpanel" aria-labelledby="coupon-tab">
+                  <div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
                     <div class="card">
                       <div class="card-header">
-                        <h5 class="mb-0"><center>Coupon</center></h5>
+                        <h5 class="mb-0"><center>Wallet</center></h5>
                       </div>
-                      
-                    </div>
-                  </div>
-                  <div class="tab-pane fade" id="track" role="tabpanel" aria-labelledby="track-tab">
-                    <div class="card">
-                      <div class="card-header">
-                        <h5 class="mb-0">Orders tracking</h5>
-                      </div>
-                      <div class="card-body contact-from-area">
-                        <p>To track your order please enter your OrderID in the box below and press "Track" button. This was given to you on your receipt and in the confirmation email you should have received.</p>
-                        <div class="row">
-                          <div class="col-lg-8">
-                            <form class="contact-form-style mt-30 mb-50" action="#" method="post">
-                              <div class="input-style mb-20">
-                                <label>Order ID</label>
-                                <input name="order-id" placeholder="Found in your order confirmation email" type="text" class="square" />
-                              </div>
-                              <div class="input-style mb-20">
-                                <label>Billing email</label>
-                                <input name="billing-email" placeholder="Email you used during checkout" type="email" class="square" />
-                              </div>
-                              <button class="submit submit-auto-width" type="submit">Track</button>
-                            </form>
-                          </div>
-                        </div>
+                      <div class="card-body">
+                        <table class="table table-striped-columns">
+                          <thead>
+                            <tr>
+                              <th>date</th>
+                              <th>transaction type</th>
+                              <th>Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for wallet in wallets %}
+                            <tr>
+                              <td>
+                                {{wallet.created_at}}
+                              </td>
+                              <td>
+                                {{wallet.type}}
+                              </td>
+                              <td>
+                               ₹ {{wallet.amount}}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   </div>

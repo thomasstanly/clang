@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login as user_login, logout as user_logout
@@ -30,7 +31,7 @@ def signup(request):
         except:
                 pass
         try:
-            if User.objects.get(user_name = user):
+            if User.objects.get(username = user):
                 messages.warning(request,"username is taken")
                 return redirect('user_app:signup')
         except:

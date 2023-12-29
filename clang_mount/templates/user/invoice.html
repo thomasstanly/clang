@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <title>Invoice Clang Mount</title>
+<style>
+  .clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  position: relative;
+  margin: 0 auto; 
+  color: #001028;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: Arial;
+}
+
+header {
+  padding: 10px 0;
+  margin-bottom: 30px;
+}
+
+#logo {
+  text-align: left;
+}
+
+#logo img {
+  width: 90px;
+}
+
+h1 {
+  
+  color: #5D6975;
+  font-size: 2.4em;
+  line-height: 1.4em;
+  text-align: center;
+  margin: 0 0 20px 0;
+}
+
+#project {
+  float: left;
+}
+
+#project span {
+  color: #5D6975;
+  text-align: right;
+  width: 52px;
+  margin-right: 10px;
+  display: inline-block;
+  font-size: 14px;
+}
+
+{% comment %} #company {
+  float: right;
+  text-align: right;
+} {% endcomment %}
+
+#project div,
+#company div {
+  white-space: nowrap;        
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: 20px;
+}
+
+
+
+table th,
+table td {
+  text-align: center;
+}
+
+table th {
+  
+  
+  color: #5D6975;
+  border-bottom: 1px solid #C1CED9;
+  white-space: nowrap;        
+  font-weight: normal;
+}
+
+table .service,
+table .desc {
+  text-align: left;
+}
+
+table td {
+ padding-top:5px;
+ padding-bottom:5px;
+  
+}
+
+table tr {
+  border-bottom: 1px solid #C1CED9;
+}
+
+table td.service,
+table td.desc {
+  vertical-align: top;
+}
+
+table td.unit,
+table td.qty,
+table td.total {
+  font-size: 1.2em;
+}
+
+table td.grand {
+  border-top: 1px solid #5D6975;;
+}
+
+#notices .notice {
+  color: #5D6975;
+  font-size: 1.2em;
+}
+
+footer {
+  color: #5D6975;
+  width: 100%;
+  height: 30px;
+  position: absolute;
+  bottom: 0;
+  border-top: 1px solid #C1CED9;
+  padding: 8px 0;
+  text-align: center;
+}
+
+
+  </style>
+</head>
+
+<body>
+  <header class="clearfix">
+    <table>
+      <tr style="border: none;">
+        <td style=" text-align: left;margin-left: 0px;">
+          <div id="logo" >
+            <img src="static/user_assets/imgs/theme/logo.png" class="brand-logo" width="150" height="150">
+          </div>
+        </td>
+        <td style=" text-align: right;" valign="bottom">
+          <div id="company">
+            <p>Clang Mount <br>
+              kakkanadu,ernakualm <br>
+              +91 9458374568 <br>
+              <a href="mailto:company@example.com">clangmount@gmail.com</a> <br>
+            </p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </header>
+    <h1>INVOICE</h1>
+    <div id="project">
+      <div><span>CLIENT:</span> {{first_name}} {{last_name}}</div>
+      <div><span>EMAIL:</span> <a href="mailto:{{user_email}}">{{user_email}}</a></div>
+      <div><span>DATE:</span> {{date|date:"F j, Y"}}</div>
+      <div><span>ORDER ID:</span> {{order_id}}</div>
+      <div><span>DELIVERY DATE:</span> {{delivery_date | date:"F j, Y" }}</div>
+    </div>
+    <br>
+    <br>
+    <div class="table-container" style="overflow-x:auto">
+      <table class="table" style="width:100%">
+          <thead>
+              <tr>
+                  <th scope="col">PRODUCT</th>
+                  <th scope="col">QUANTITY</th>
+                  <th scope="col" align="right" style="margin-right: 40px;">PRICE</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for i in order_items %}
+            <tr>
+              <td scope="row">{{i.product.product_name}}</td>
+              <td>{{i.quantity}}</td>
+              <td align="right" style="margin-right: 30px;">{{i.product_price}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td scope="row"></td>
+              <td align="right">SUB-TOTAL: </td>
+              <td align="right" style="margin-right: 30px;">{{sub_total}}</td>
+            </tr>
+            <tr>
+              <td scope="row"></td>
+              <td align="right">SHIPPING: </td>
+              <td align="right" style="margin-right: 30px;">{{shipping}}</td>
+            </tr>
+            <tr>
+              <td scope="row"></td>
+              <td align="right">TOTAL: </td>
+              <td align="right" style="margin-right: 30px;">{{grand_total}}</td>
+            </tr>
+          </tbody>
+      </table>
+    </div>
+  <p style="text-align:right; font-size:12px;">*All values are in INR<p>
+</body>
+
+</html>

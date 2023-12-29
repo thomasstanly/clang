@@ -1,8 +1,9 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login as auth_login,logout as auth_logout
 from django.views.decorators.cache import cache_control
+from django.http import JsonResponse
 from django.db.models import Q, Sum, Count
-from order.forms import OrderStatusForm
+# from order.forms import OrderStatusForm
 from admin_side.models import User
 from django.contrib import messages
 from order.models import Order,OrderProduct,Payment
@@ -33,17 +34,17 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect('admin_app:admin_login')
-cache_control(no_cache=True, must_revalidate=True, no_store=True)
 
+cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def dashboard(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
 
-            current_date = timezone.now() - timedelta(days=6)
+            current_date = timezone.now() - timedelta(days=10)
             login_date = timezone.now() - timedelta(days=10)
             total_revenue = Payment.objects.filter(status='SUCCESS').aggregate(Sum('amount_paid'))['amount_paid__sum'] or 0
-            orders_count = Order.objects.filter(Q(is_ordered=True) & Q(status ='DELIVERED')).aggregate(Count('id'))['id__count'] or 0
-            product_count = OrderProduct.objects.filter(order__payment__status='SUCCESS').aggregate(Sum('quantity'))['quantity__sum'] or 0
+            orders_count = Order.objects.filter(Q(is_ordered=True)).aggregate(Count('id'))['id__count'] or 0
+            product_count = OrderProduct.objects.filter(Q(order__payment__status='SUCCESS') & Q(status='DELIVERED')).aggregate(Sum('quantity'))['quantity__sum'] or 0
             monthly_sales = Payment.objects.filter(created_at__month=timezone.now().month,status="SUCCESS").aggregate(Sum('amount_paid'))['amount_paid__sum'] or 0
             yearly_sales = Payment.objects.filter(created_at__year=timezone.now().year,status="SUCCESS").aggregate(Sum('amount_paid'))['amount_paid__sum'] or 0
             user = User.objects.filter(is_active=True).count()
@@ -82,20 +83,19 @@ def dashboard(request):
     return redirect('admin_app:admin_login')
 
 def get_weekly_sales():
-    today = timezone.now()
-    
-    start_of_week = today - timedelta(days=today.weekday()+2)
-    end_of_week = start_of_week + timedelta(days=6)
+    today = timezone.now().date()
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=7)
     print(start_of_week,'\n',end_of_week)
     weekly_sales = Payment.objects.filter(
-        created_at__range=[start_of_week, end_of_week],
+        created_at__date__range=[start_of_week, end_of_week],
         status="SUCCESS"
     ).annotate(day_of_week=ExtractWeekDay('created_at')).values('day_of_week').annotate(weekly_total=Sum('amount_paid')).order_by('day_of_week')
-
+    print(weekly_sales)
     weekly_sales_values = [0] * 7
     for entry in weekly_sales:
-  
-        adjusted_index = entry['day_of_week']-1
+
+        adjusted_index = entry['day_of_week'] - 2
         weekly_sales_values[adjusted_index] = entry['weekly_total']
 
     return weekly_sales_values
@@ -132,6 +132,8 @@ def get_yearly_sales():
 def order(request):
     if request.user.is_authenticated and request.user.is_superuser:
         orders = Order.objects.all().order_by('-created_at').filter(is_ordered=True)
+        for order in orders:
+            order.delivery_date = order.payment.created_at.date() + timedelta(days=3)
         context = {
             'orders': orders,
         }
@@ -142,28 +144,32 @@ def order(request):
 def order_details(request,id):
     if request.user.is_authenticated and request.user.is_superuser:
         order = Order.objects.get(id=id)
-        order_product = OrderProduct.objects.filter(order=order)
-        
-        if request.method == 'POST':
-            form = OrderStatusForm(request.POST,instance=order)
-            if form.is_valid():
-                form.save()
-                if order.status == 'DELIVERED':
-                    order.payment.status = 'SUCCESS'
-                    order.payment.save()
+        order_products = OrderProduct.objects.filter(order=order)
 
-        else:
-            form = OrderStatusForm(instance=order)
-            
         context = {
-            'order':order,
-            'order_product':order_product,
-            'form': form,
+            'order': order,
+            'order_products': order_products,
         }
         
         return render(request,'cus_admin/page-orders-details.html',context)
     else:
          return redirect('admin_app:admin_login' )
+
+def order_status(request):
+    
+    if request.POST.get('action') == 'POST':
+        status = request.POST.get('status')
+        id = request.POST.get('id')
+        order_product = OrderProduct.objects.get(id=id)
+        order_product.status = status
+        order_product.save()
+        if order_product.status == 'DELIVERED':
+            order.payment.status = 'SUCCESS'
+            order.payment.save()
+        return JsonResponse({'success':True})
+    else:
+        messages.success(request,'Failed')
+        return redirect('admin_app:order')
 
 def search(request):
     query = request.POST.get('search')
@@ -171,8 +177,7 @@ def search(request):
     if query:
         orders = Order.objects.filter(
             Q(order_no__icontains=query) |
-            Q(user__user_name__icontains=query) |
-            Q(status__icontains=query)
+            Q(user__username__icontains=query) 
         )
     else:
         return redirect('admin_app:order')

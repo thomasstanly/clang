@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'shop.apps.ShopConfig',
     'order.apps.OrderConfig',
     'coupon.apps.CouponConfig',
+    'wallet.apps.WalletConfig',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'clang_mount.urls'
@@ -64,6 +67,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.car_fuc',
                 'cart.context_processors.wishlist_func',
+                'cart.context_processors.wallet_func',
+                'social_django.context_processors.backends',
             ],
         },
     },
@@ -141,12 +146,35 @@ EMAIL_HOST_PASSWORD = "ekhukgmmrpvhaken"
 EMAIL_USE_TLS = True
 
 
-# For user authentication
-SESSION_COOKIE_NAME = 'user_session_id'
 
-# For admin authentication
-ADMIN_SESSION_COOKIE_NAME = 'admin_session_id'
 
 #RAZORPAY
 KEY = 'rzp_test_DadhvgCTL7p70u'
 SECRET_KEY = 'o7iNqzNVyDMRokNUTNazpAVS'
+
+
+#social
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+LOGIN_URL = 'user_app:user_login'
+LOGIN_REDIRECT_URL = 'shop_app:index'
+LOGOUT_URL = 'user_app:user_logout'
+LOGOUT_REDIRECT_URL = 'user_app:user_login'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "52100197078-hltg3m213u5j8qk2l7sb424573nrjfj1.apps.googleusercontent.com"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
+
+# image cropping

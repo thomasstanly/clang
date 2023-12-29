@@ -21,7 +21,6 @@ class Payment(models.Model):
         return self.payment_id
 
 class Order(models.Model):
-    order_status = (("PROCESSING","Processing"),("DISPATCHED","Dispatched"),("OUT FOR DELIVERY","Out for delivery"),("CANCELLED","Cancelled"),("RETURNED","Returned"),("DELIVERED","Delivered"))
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     payment = models.ForeignKey(Payment,on_delete=models.SET_NULL,null=True,blank=True)
     order_no = models.CharField(max_length=100,null=True,blank=True,unique=True)
@@ -29,8 +28,8 @@ class Order(models.Model):
     coupon = models.ForeignKey(Coupon,on_delete=models.SET_NULL,null=True,blank=True)
     sub_total = models.DecimalField(max_digits=12,decimal_places=2,null=True,blank=True)
     shipping = models.DecimalField(max_digits=12,decimal_places=2,null=True,blank=True)
+    wallet_amount = models.IntegerField(default=0,null=True)
     grand_total = models.DecimalField(max_digits=12,decimal_places=2)
-    status = models.CharField(choices=order_status,max_length=20,default="PROCESSING")
     is_ordered = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -39,15 +38,17 @@ class Order(models.Model):
         return f"Order {self.order_no}"
     
 class OrderProduct(models.Model):
-
+    order_status = (("PROCESSING","Processing"),("DISPATCHED","Dispatched"),("OUT FOR DELIVERY","Out for delivery"),("DELIVERED","Delivered"),("CANCELLED","Cancelled"),("RETURNED","Returned"))
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Product_varient, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     product_price = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.CharField(choices=order_status,max_length=20,default="PROCESSING")
     is_ordered = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.order)
+    

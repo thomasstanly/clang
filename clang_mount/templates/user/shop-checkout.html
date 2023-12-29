@@ -170,8 +170,8 @@
                       <tr>
                         <th class="text-start">Total</th>
                         <td colspan="2" class="product-subtotal text-end">
-                          <span class="font-xl text-brand fw-900 t">₹ {{ total }}</span>
-                          <input type="hidden" name="grand_total" value="{{ total }}" />
+                          <span id="grand_total_view" class="font-xl text-brand fw-900 t">₹ {{ total }}</span>
+                          <input id="grand_total" type="hidden" name="grand_total" value="{{ total }}" />
                         </td>
                       </tr>
                     </tbody>
@@ -197,6 +197,18 @@
                         <p class="text-muted mt-5">Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-evenly">
+                  <div id="wallet">
+                    <span>Wallet :&ensp;₹&ensp;</span>{{balance}}
+                  </div>
+                  {% comment %} <input id="wallet_total" type="hidden" name="wallet_total" value="{{ balance }}" /> {% endcomment %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="1" id="add_wallet" name="add_wallet" onclick="wallet_function()">
+                    <label class="form-check-label" for="add_wallet">
+                     use wallet
+                    </label>
                   </div>
                 </div>
                 <button type="submit" href="{% url 'order_app:order_payment' %}" class="btn btn-block bg-dark">Place Order</button>
@@ -256,5 +268,48 @@
   <script>
     const csrfToken = '{{ csrf_token }}'
     const updateCartUrl = '{% url "cart_app:checkout" %}'
+  </script>
+  <script>
+    function wallet_function()
+    {
+      wallet = document.getElementById('add_wallet')
+
+      if (wallet.checked)
+      {
+        wallet_total()
+        console.log('checked')
+       
+      }else{
+        wallet_total(false)
+        console.log('not checked hahaha')
+      }
+    }
+    function wallet_total(check=true)
+    {
+      $.ajax({
+        type : 'GET',
+        url: '{% url "cart_app:checkout" %}',
+        data : {
+          check:check,
+          action : 'GET'
+        },
+        success: function (data) {
+          if (data.success) {
+            console.log('success')
+            //document.getElementById('grand_total').value = data.grand_total
+            document.getElementById('grand_total_view').innerHTML ='₹'+data.grand_total
+            document.getElementById('wallet').innerHTML ='<span>Wallet :&ensp;₹&ensp;</span>' + data.balance 
+            //document.getElementById('wallet_total').value = data.balance 
+          } else {
+             console.error('not success')
+          }
+
+        },
+        error: function () {
+          // Handle error
+          console.error('AJAX request failed');
+        }
+      })
+    }
   </script>
 {% endblock %}

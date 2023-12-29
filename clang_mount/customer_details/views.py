@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
 from admin_side.models import User
+from .forms import ProfileImage
 
 # Create your views here.
 def customer(request):
@@ -30,3 +31,8 @@ def active_inavtive(request, id):
             customer.is_active = True
         customer.save()   
         return redirect('customer_app:customer')
+    
+# def image(request):
+#     if request.method == 'POST':
+       
+ 

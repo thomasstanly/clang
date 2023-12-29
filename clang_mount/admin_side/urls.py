@@ -7,6 +7,7 @@ urlpatterns = [
     path('order',views.order,name='order'),
     path('order/search',views.search,name='search'),
     path('order_details/<int:id>',views.order_details,name='order_details'),
+    path('order_details/status',views.order_status,name='order_status'),
     path('logout',views.logout,name='admin_logout'),
     
 ]

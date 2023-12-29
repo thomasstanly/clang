@@ -10,7 +10,8 @@
               <table class="table table-striped">
                 <thead>
                   <tr>
-                    <th scope="col" class="h5">Shopping Bag</th>
+                    <th scope="col" class="h5">Shopping Bag</th> <th></th>
+                    <th scope="col" class="text-center">Status</th>
                     <th scope="col" class="text-center">Price</th>
                     <th scope="col" class="text-center">Discount</th>
                     <th scope="col" class="text-center">Quantity</th>
@@ -19,15 +20,24 @@
                 {% for product in products %}
                   <tbody>
                     <tr>
-                      <th scope="row">
-                        <div class="d-flex align-items-center">
-                          <a href="{% url "shop_app:product_details" slug=product.product.varient_slug %}"><img src="{{ product.product.thumbnail_image.url }}" class="img-fluid rounded-3" style="width: 120px;" alt="Book" /></a>
-                          <div class="flex-column ms-4">
-                            <p class="mb-2">{{ product.product.product_name }}</p>
-                            <p class="mb-0">{{ product.product.product_name.product_brand }}</p>
+                      <td class="align-middle text-center" style="width: 10vw;">
+                          <div style="width: 10vw;">
+                            <a href="{% url "shop_app:product_details" slug=product.product.varient_slug %}"><img src="{{ product.product.thumbnail_image.url }}" class="img-fluid rounded-3" alt="Book" /></a>
                           </div>
-                        </div>
-                      </th>
+                      </td>
+                      <td class="align-middle text-center">
+                        <p class="mb-2">{{ product.product.product_name }}</p>
+                        <p class="mb-0">{{ product.product.product_name.product_brand }}</p>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span>{{product.status}}</span> <br>
+                        {% if current_date < delivery_date and product.status != 'CANCELLED' %}
+                          <a href="{% url "account_app:cancel_product" id=product.id %}"><button class=" border-0 btn-warning px-5 py-2 rounded-3"><strong>Cancel</strong></button></a>
+                        {% elif product.status == 'DELIVERED' and day > 0 %}
+                          <a href="{% url "account_app:return_product" id=product.id %}"><button class=" border-0 btn-warning px-5 py-2 rounded-3"><strong>Return</strong></button></a>
+                          <p>{{day}} day remain</p>
+                        {% endif %}
+                      </td>
                       <td class="align-middle text-center">
                         <p class="mb-0" style="font-weight: 500;">₹ {{ product.product.price }}</p>
                       </td>
@@ -45,20 +55,41 @@
           </div>
           <div class="col-lg-3 primary-sidebar">
             <div class="widget-category mb-30">
-              <h5 class="section-title style-1 mb-30 wow fadeIn animated">Cart total</h5>
+              <h5 class="section-title style-1 mb-30 wow fadeIn animated">{{order.order_no}}</h5>
+              <div>
+                <p> {{order.delivery_address.address_type}} <br> 
+                    {{order.delivery_address.address}} <br> 
+                    {{order.delivery_address.country}} {{order.delivery_address.state}}  <br>
+                    {{order.delivery_address.city}} {{order.delivery_address.pincode}}  <br> <br>
+                    delivery date :  {{delivery_date | date:"F j, Y"}}
+                </p>
+              </div>
+              <hr>
               <div class="d-flex justify-content-between">
                 <p>Sub-total</p>
                 <p id="sub-total">₹ {{ order.sub_total }}</p>
               </div>
               <div class="d-flex justify-content-between">
                 <p>shipping</p>
-                <p id="discount">₹ {{ order.shipping }}</p>
+                {% if order.shipping == None %}
+                <p id="discount">Free Delivery</p>
+                {% else %}
+                  <p id="discount">₹ {{ order.shipping }}</p>
+                {% endif %}
               </div>
-              <hr />
+              <div class="d-flex justify-content-between">
+                <p>Coupon</p>
+                {% if order.coupon == None %}
+                <p id="discount">No coupon</p>
+                {% else %}
+                  <p id="discount">{{ order.coupon.coupon_code }}</p>
+                {% endif %}
+              </div>
+              <hr>
               <div class="d-flex justify-content-between">
                 <p class="fw-bolder fs-5">Total</p>
                 <p class="fs-5">
-                  ₹ <span class="fw-bolder" id="total">{{ order.grand_total }}</span>
+                  ₹ <span class="fw-bolder" id="total">{{ order.total }}</span>
                 </p>
               </div>
             </div>
