@@ -15,9 +15,10 @@
     <link rel="shortcut icon" type="image/x-icon" href="assets/imgs/theme/favicon.svg" />
     <!--font awesome-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.0.0/mdb.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.0.0/mdb.min.css" rel="stylesheet">
     <!-- Template CSS for user -->
     <link rel="stylesheet" href="{% static 'user_assets/css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'user_assets/css/search.css' %}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
     <!-- CROPPER -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css">
@@ -42,9 +43,13 @@
             </div>
             <div class="search-style-2">
               <form class="bg-white" action="{% url "shop_app:search_product" %}" method="GET">{% csrf_token %}
-                <input name="query" type="text" placeholder="Search for items…" />
-                <button type="submit" class="btn bg-dark"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg></i></button>
+                <input autocomplete="off" name="query" id="searchInput" type="text" oninput="listPrediction()" value="" placeholder="Search for items…" />
+                <button type="submit" class="btn bg-dark"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg></button>
               </form>
+              <div id="search-div"  class="position-absolute rounded-3">
+                <ul id="searchList">
+                </ul>
+              </div>
             </div>
             {% if user.is_authenticated %}
               <div class="header-action-2">
@@ -62,13 +67,13 @@
                   <div class="cart-dropdown-wrap cart-dropdown-hm2 " style="width: 15vw;">
                     <ul>
                       <li>
-                        <a class="dropdown-item" href="{% url "account_app:account" %}"><i class="fa-regular fa-user" style="color: #000000;"></i></i>&ensp;&ensp;My account</a>
+                        <a class="dropdown-item" href="{% url "account_app:account" %}"><i class="fa-regular fa-user" style="color: #000000;"></i>&ensp;&ensp;My account</a>
                       </li>
                       <li>
                         <a class="dropdown-item" href="{% url 'account_app:account' %}"><i class="fa-solid fa-wallet" style="color: #000000;"></i> &ensp;&ensp;Wallet &ensp;&ensp; &ensp;&ensp; ₹ {{balance}}</a>
                       </li>
                       <li>
-                        <a class="dropdown-item text-danger" href="{% url 'user_app:user_logout' %}"><i class="fa-solid fa-right-from-bracket" style="color: #000000;"></i></i>&ensp;&ensp;Logout</a>
+                        <a class="dropdown-item text-danger" href="{% url 'user_app:user_logout' %}"><i class="fa-solid fa-right-from-bracket" style="color: #000000;"></i>&ensp;&ensp;Logout</a>
                       </li>
                     </ul>
                   </div>
@@ -145,6 +150,7 @@
         </div>
       </div>
     </header>
+
     {% block content %}
 
     {% endblock %}
@@ -300,83 +306,156 @@
     <script src="{% static 'admin_assets/js/vendors/jquery.fullscreen.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.js"></script>
-  <script>
-    {% if messages %}
-        {% for message in messages %}
-            Swal.fire({
+    <script>
+      {% if messages %}
+          {% for message in messages %}
+              Swal.fire({
                 icon: '{{ message.tags }}',
                 title: '{{ message.tags|title }}',
                 text: '{{ message }}',
-            });
-        {% endfor %}
-    {% endif %}
-  </script>
-  <script>
-    const alertBox = document.getElementById('alert-box')
-    const imageBox = document.getElementById('image-box')
-    const imageForm = document.getElementById('image-form')
-    const confirmBtn = document.getElementById('confirm-btn')
-    const input = document.getElementById('id_profile_image')
-    console.log(imageForm)
-    const csrf = document.getElementsByName('csrfmiddlewaretoken')
+              });
+          {% endfor %}
+      {% endif %}
+    </script>
+    <script>
+      const alertBox = document.getElementById('alert-box')
+      const imageBox = document.getElementById('image-box')
+      const imageForm = document.getElementById('image-form')
+      const confirmBtn = document.getElementById('confirm-btn')
+      const input = document.getElementById('id_profile_image')
+      const csrf = document.getElementsByName('csrfmiddlewaretoken')
 
-    input.addEventListener('change',()=>{
-      
-      const img_data = input.files[0]
-      const url = URL.createObjectURL(img_data)
-      imageBox.innerHTML = `<img src="${url}" id="image">`
+      input.addEventListener('change',()=>{
+        
+        const img_data = input.files[0]
+        const url = URL.createObjectURL(img_data)
+        imageBox.innerHTML = `<img src="${url}" id="image">`
 
-      var $image = $('#image');
+        var $image = $('#image');
 
-      $image.cropper({
-        aspectRatio: 1,
-        crop: function(event) {
-          console.log(event.detail.x);
-          console.log(event.detail.y);
-          console.log(event.detail.width);
-          console.log(event.detail.height);
-          console.log(event.detail.rotate);
-          console.log(event.detail.scaleX);
-          console.log(event.detail.scaleY);
-        }
+        $image.cropper({
+          aspectRatio: 1,
+          crop: function(event) {
+            console.log(event.detail.x);
+            console.log(event.detail.y);
+            console.log(event.detail.width);
+            console.log(event.detail.height);
+            console.log(event.detail.rotate);
+            console.log(event.detail.scaleX);
+            console.log(event.detail.scaleY);
+          }
 
-      
-      });
+        
+        });
 
-      // Get the Cropper.js instance after initialized
-      var cropper = $image.data('cropper');
+        // Get the Cropper.js instance after initialized
+        var cropper = $image.data('cropper');
 
-      confirmBtn.addEventListener('click', ()=>{
-          cropper.getCroppedCanvas().toBlob((blob) => {
-          const fd = new FormData()
-          fd.append('csrfmiddlewaretoken',csrf[0].value)
-          fd.append('profile_image',blob, 'my-image.jpg')
-            console.log(fd)
-          $.ajax({
-            type: 'POST',
-            url: imageForm.action,
-            enctype: 'multipart/form-data',
-            data: fd,
-            success: function(response){
-              location.reload();
-              setTimeout(function (){
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Success',
-                  text: response.message,
-                });
-              },3500)
-            },
-            error: function(response){
-              console.log(error)
-            },
-            cache:false,
-            contentType:false,
-            processData:false,
+        confirmBtn.addEventListener('click', ()=>{
+          cropper.getCroppedCanvas().toBlob((blob) =>{
+            const fd = new FormData()
+            fd.append('csrfmiddlewaretoken',csrf[0].value)
+            fd.append('profile_image',blob, 'my-image.jpg')
+
+            $.ajax({
+              type: 'POST',
+              url: imageForm.action,
+              enctype: 'multipart/form-data',
+              data: fd,
+              success: function(response){
+                location.reload();
+                setTimeout(function (){
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message,
+                  });
+                },3500)
+              },
+              error: function(response){
+                console.log(error)
+              },
+              cache:false,
+              contentType:false,
+              processData:false,
+            })
           })
         })
       })
-    })
-  </script>
+    </script>
+    <script>
+      function listPrediction(){
+        const searchInput = $('#searchInput').val();
+        console.log(searchInput)
+        $.ajax({
+          type: 'GET',
+          url: '{% url 'shop_app:predict' %}',
+          data:{
+            predict : searchInput,
+          },
+          success: function(data){
+            data = data.value
+            var searchList = document.getElementById('searchList');
+            searchList.innerHTML = '';
+            if (searchInput.trim() !== '') {
+              data.forEach(function (product) {
+                var productName = product['product_name__product_name'].toLowerCase();
+                var brandName = product['product_name__product_brand__Brand_name'].toLowerCase();
+                var categoryTitle = product['product_name__category_id__category_title'].toLowerCase();
+
+                if (brandName.startsWith(searchInput.toLowerCase())) {
+                    var listItem = document.createElement('li');
+                    listItem.innerHTML = `${brandName}`;
+                    searchList.appendChild(listItem);
+
+                    listItem.addEventListener('click', function () {
+                      $('#searchInput').val(brandName);
+                      $('#searchList').hide();
+                    });
+                }
+        
+                if (categoryTitle.startsWith(searchInput.toLowerCase())) {
+                    var listItem = document.createElement('li');
+                    listItem.innerHTML = `${categoryTitle}`;
+                    searchList.appendChild(listItem);
+
+                    listItem.addEventListener('click', function () {
+                      $('#searchInput').val(categoryTitle);
+                      $('#searchList').hide();
+                    });
+                }
+        
+                if (productName.startsWith(searchInput.toLowerCase())) {
+                    var listItem = document.createElement('li');
+                    listItem.innerHTML = `${productName}`;
+                    searchList.appendChild(listItem);
+
+                    listItem.addEventListener('click', function () {
+                      $('#searchInput').val(productName);
+                      $('#searchList').hide();
+                    });
+                }
+            });
+          
+              // Show the searchList
+              $('#searchList').show();
+          } else {
+              // If query is null or empty, hide the searchList
+              $('#searchList').hide();
+          }
+          
+          },
+          error: function(response){
+            console.log(error)
+          },
+          cache:false
+        })
+      }
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('#searchInput, #searchList').length) {
+          $('#searchList').hide();
+        }
+      });          
+    </script>
   </body>
 </html>

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'order.apps.OrderConfig',
     'coupon.apps.CouponConfig',
     'wallet.apps.WalletConfig',
+    'offer_manage.apps.OfferManageConfig',
     'social_django',
 ]
 

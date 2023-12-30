@@ -10,6 +10,7 @@ from order.models import Order,OrderProduct,Payment
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models.functions import ExtractMonth,ExtractWeekDay,ExtractYear
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -50,7 +51,7 @@ def dashboard(request):
             user = User.objects.filter(is_active=True).count()
             new_member = User.objects.filter(joined_on__date__gt =current_date)
             last_login = User.objects.filter(last_login__date__lt = login_date)
-            orders = Order.objects.filter(is_ordered=True)
+            orders = Order.objects.filter(is_ordered=True).order_by('-created_at')[:5]
             
             
             weekly_sales_data = get_weekly_sales()
@@ -62,7 +63,6 @@ def dashboard(request):
             monthly_sales_str = ",".join(map(str, monthly_sales_data))
             yearly_sales_str = ",".join(map(str, yearly_sales_data))
 
-            print(weekly_sales_str)
 
             context = {
                 'revenue': total_revenue,
@@ -86,12 +86,12 @@ def get_weekly_sales():
     today = timezone.now().date()
     start_of_week = today - timedelta(days=today.weekday())
     end_of_week = start_of_week + timedelta(days=7)
-    print(start_of_week,'\n',end_of_week)
+   
     weekly_sales = Payment.objects.filter(
         created_at__date__range=[start_of_week, end_of_week],
         status="SUCCESS"
     ).annotate(day_of_week=ExtractWeekDay('created_at')).values('day_of_week').annotate(weekly_total=Sum('amount_paid')).order_by('day_of_week')
-    print(weekly_sales)
+   
     weekly_sales_values = [0] * 7
     for entry in weekly_sales:
 
@@ -134,8 +134,20 @@ def order(request):
         orders = Order.objects.all().order_by('-created_at').filter(is_ordered=True)
         for order in orders:
             order.delivery_date = order.payment.created_at.date() + timedelta(days=3)
+
+        row = 5
+        paginator = Paginator(orders,row)
+        page = request.GET.get('page')
+
+        try:
+            order_list = paginator.page(page)
+        except PageNotAnInteger:
+            order_list = paginator.page(1)
+        except EmptyPage:
+            order_list = paginator.page(paginator.num_pages)
+
         context = {
-            'orders': orders,
+            'orders': order_list,
         }
         return render(request,'cus_admin/page-orders.html',context)
     else:
@@ -146,6 +158,7 @@ def order_details(request,id):
         order = Order.objects.get(id=id)
         order_products = OrderProduct.objects.filter(order=order)
 
+        
         context = {
             'order': order,
             'order_products': order_products,
@@ -172,16 +185,32 @@ def order_status(request):
         return redirect('admin_app:order')
 
 def search(request):
-    query = request.POST.get('search')
+    query = request.GET.get('search')
 
     if query:
         orders = Order.objects.filter(
             Q(order_no__icontains=query) |
-            Q(user__username__icontains=query) 
-        )
+            Q(user__username__icontains=query) |
+            Q(payment__status__icontains=query )
+        ).filter(is_ordered=True).order_by('-created_at')
+        
+        for order in orders:
+            order.delivery_date = order.payment.created_at.date() + timedelta(days=3)
+
+        row = 5
+        paginator = Paginator(orders,row)
+        page = request.GET.get('page')
+
+        try:
+            order_details = paginator.page(page)
+        except PageNotAnInteger:
+            order_details = paginator.page(1)
+        except EmptyPage:
+            order_details = paginator.page(paginator.num_pages)
+        
     else:
         return redirect('admin_app:order')
     context = {
-        'orders': orders,
+        'orders': order_details,
     }
     return render(request,'cus_admin/page-orders.html',context)

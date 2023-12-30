@@ -5,7 +5,7 @@ class CouponForm(forms.ModelForm):
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        for filed, values in self.fields.items():
+        for field_name, values in self.fields.items():
             values.widget.attrs['class'] = 'form-control'
             
     class Meta:

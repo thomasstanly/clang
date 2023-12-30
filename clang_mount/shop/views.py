@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.contrib.auth import authenticate, login as user_login, logout as user_logout
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
@@ -6,6 +7,7 @@ from django.db.models import Q
 from admin_side.views import login as admin_login
 from pro_category.models import Categories
 from product.models import Brand,Product_varient,product_image
+from .forms import PriceRangeFilterForm
 
 # Create your views here.
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -35,6 +37,21 @@ def index(request):
         return render(request,'user/index.html',context)
 
 ##################### SEARCHING PRODUCTS ##################
+def search_predict(request):
+
+    query = request.GET.get('predict','')
+
+    products = Product_varient.objects.filter(
+                Q(product_name__product_name__icontains=query) |
+                Q(product_name__product_brand__Brand_name__icontains=query) |
+                Q(product_name__category_id__category_title__icontains=query)
+                ).filter(vari_is_active=True).values(
+                    'product_name__product_name',
+                    'product_name__product_brand__Brand_name',
+                    'product_name__category_id__category_title'
+                ).distinct()
+    products = list(products)
+    return JsonResponse({'success':True,'value':products})
 
 def search_product(request):
     if request.user.is_authenticated:
@@ -143,11 +160,23 @@ def home(request):
         if request.user.is_superuser:
             return redirect('admin_app:admin_login')
         products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True)
-       
+
+        if request.method == 'GET':
+            form = PriceRangeFilterForm(request.GET)
+            if form.is_valid():
+                min_price = form.cleaned_data.get('min_price')
+                max_price = form.cleaned_data.get('max_price')
+                print(min_price)
+                print(max_price)
+                print('hi')
+        else:
+            form = PriceRangeFilterForm()
+        print('hello')
         categories = Categories.objects.all()
         context = {
             'products' : products,
             'categories': categories,
+            'form': form,
         }
         return render(request,'user/shop-list-left.html',context)
     else:

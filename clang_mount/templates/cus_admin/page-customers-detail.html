@@ -13,10 +13,18 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        
+                        <div class="col-xl col-lg flex-grow-0" style="flex-basis:230px">
+                            <div class="img-thumbnail shadow w-100 bg-white position-relative text-center" style="margin-top:-120px">
+                               {% if image.profile_image %}
+                               <img src="{{image.profile_image.url}}" class="rounded-circle" alt="Logo Brand">
+                               {% else %}
+                                <img src="{% static 'user_assets/imgs/page/images.png' %}" class="rounded-circle" alt="Logo Brand">
+                               {% endif %}
+                            </div>
+                        </div>
                         <div class="col-xl col-lg">
-                            <h3>{{customer.user_name}}</h3>
-                            <p>{{customer.email}}</p>
+                            <h3>{{customer.username}}</h3>
+                            
                         </div> <!--  col.// -->
                         <div class="col-xl-4 text-md-end">
                             <form action="{% url "customer_app:status" id=customer.id %}">
@@ -34,16 +42,17 @@
                         <div class="col-sm-6 col-lg-4 col-xl-3">
                             <h6>Contacts</h6>
                             <p>
-                                Manager: Jerome Bell <br>
-                                <template class="__cf_email__" data-cfemail="31585f575e715449505c415d541f525e5c">[email&#160;protected]</template> <br>
-                                (229) 555-0109, (808) 555-0111
+                                phone :{{address.phone}} <br>
+                                email :{{customer.email}}
                             </p>
                         </div> <!--  col.// -->
                         <div class="col-sm-6 col-lg-4 col-xl-3">
                             <h6>Address</h6>
                             <p>
-                                Country: California <br>
-                                Address: Ranchview Dr. Richardson <br>
+                                Country : {{address.country}} <br>
+                                State : {{address.state}} <br>
+                                city : {{address.city}} <br>
+                                Address: {{address.address}}<br>
                                 Postal code: 62639
                             </p>
                         </div> <!--  col.// -->

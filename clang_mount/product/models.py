@@ -1,7 +1,9 @@
 from django.db import models
 from pro_category.models import Categories
 from django.utils.text import slugify
+from django.utils import timezone
 from PIL import Image
+
 # Create your models here.
 
 class Brand(models.Model):
@@ -66,11 +68,46 @@ class Product_varient(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def after_discount(self):
-        price = self.price
-        discount = (self.discount_percentage * price)/100
-        return price - discount
+    def percetage(self):
+        product_offer = self.discount_percentage
+        category_offer = 0
+        brand_offer = 0
 
+        category= self.product_name.category_id
+        if self.product_name.category_id.categoryoffer_set.filter(category_offer=category,is_active=True,offer_expire_date__gte=timezone.now()).exists():
+            category_offer = self.product_name.category_id.categoryoffer_set.filter(category_offer=category,is_active=True,offer_expire_date__gte=timezone.now()).values_list('discount_percentage',flat=True).first()
+
+        brand= self.product_name.product_brand
+        if self.product_name.product_brand.brandoffer_set.filter(brand_offer=brand,is_active=True,offer_expire_date__gte=timezone.now()).exists():
+            brand_offer = self.product_name.product_brand.brandoffer_set.filter(brand_offer=brand,is_active=True,offer_expire_date__gte=timezone.now()).values_list('discount_percentage',flat=True).first()
+        
+        offer = category_offer + brand_offer + product_offer
+        if offer >= 100:
+            offer = 100
+        
+        return offer
+
+
+    def after_discount(self):
+        product_offer = self.discount_percentage
+        category_offer = 0
+        brand_offer = 0
+
+        category= self.product_name.category_id
+        if self.product_name.category_id.categoryoffer_set.filter(category_offer=category,is_active=True,offer_expire_date__gte=timezone.now()).exists():
+            category_offer = self.product_name.category_id.categoryoffer_set.filter(category_offer=category,is_active=True,offer_expire_date__gte=timezone.now()).values_list('discount_percentage',flat=True).first()
+
+        brand= self.product_name.product_brand
+        if self.product_name.product_brand.brandoffer_set.filter(brand_offer=brand,is_active=True,offer_expire_date__gte=timezone.now()).exists():
+            brand_offer = self.product_name.product_brand.brandoffer_set.filter(brand_offer=brand,is_active=True,offer_expire_date__gte=timezone.now()).values_list('discount_percentage',flat=True).first()
+
+        offer = category_offer + brand_offer + product_offer
+
+        if offer >= 100:
+            offer = 100
+
+        discount = (offer * self.price)/100
+        return self.price - discount
     
     def __str__(self):
         return f"{self.product_name} {self.product_name.product_brand} {self.pk}"
@@ -88,9 +125,6 @@ class Product_varient(models.Model):
             size = (522,522)
             img=img.resize(size, Image.BOX)
             img.save(self.thumbnail_image.path)
-
-
-        
 
 
 class product_image(models.Model):

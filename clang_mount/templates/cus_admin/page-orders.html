@@ -7,14 +7,13 @@
       <div class="content-header">
         <div>
           <h2 class="content-title card-title">Order List</h2>
-          <p>Lorem ipsum dolor sit amet.</p>
         </div>
       </div>
       <div class="card mb-4">
         <header class="card-header">
           <div class="row">
             <div class="col-lg-6 col-md-6 me-auto">
-              <form class="d-flex" action="{% url 'admin_app:search' %}" method="POST">
+              <form class="d-flex" action="{% url 'admin_app:search' %}" method="GET">
                 {% csrf_token %}
                 <input name="search" class="bg-dark text-light rounded w-100" type="text" placeholder="Search..." class="form-control" />
                 <button type="submit" class="btn btn-secondary ms-2">Search</button>
@@ -49,10 +48,7 @@
                     <td  class="text-center">
                       <span class="badge rounded-pill alert-warning">{{ order.payment.status }}</span>
                     </td>
-                    {% comment %} <td  class="text-center">
-                      <span class="badge rounded-pill alert-warning">{{ order.status }}</span>
-                    </td> {% endcomment %}
-                    <td  class="text-center">{{ order.created_at }}</td>
+                    <td  class="text-center">{{ order.payment.created_at }}</td>
                     <td  class="text-center">{{ order.delivery_date }}</td>
                     <td class="text-end">
                       <a href="{% url 'admin_app:order_details' id=order.id %}" class="btn btn-md rounded font-sm">Detail</a>
@@ -64,6 +60,27 @@
           </div> <!-- table-responsive //end -->
         </div> <!-- card-body end// -->
       </div> <!-- card end// -->
+      <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-start">
+            {% if orders.has_previous %}
+              <li class="page-item">
+                  <a class="page-link" href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}page=1">&laquo;</a>
+              </li>
+            {% endif %}
+            {% for page_num in orders.paginator.page_range %}
+              <li class="page-item {% if page_num == orders.number %}active{% endif %}">
+                  <a class="page-link" href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}page={{ page_num }}">{{ page_num }}</a>
+              </li>
+            {% endfor %}
+            {% if orders.has_next %}
+              <li class="page-item">
+                  <a class="page-link" href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}page={{ orders.paginator.num_pages }}">&raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
     </section> <!-- content-main end// -->
     <footer class="main-footer font-xs">
       <div class="row pb-30 pt-15">

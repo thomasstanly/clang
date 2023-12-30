@@ -1,0 +1,129 @@
+{% extends 'cus_admin/base.html' %}
+{% load static %}
+{% block content %}
+  <main class="main-wrap">
+    {% include 'cus_admin/header.html' %}
+    <section class="content-main">
+      <div class="content-header">
+        <a href="javascript:history.back()"><i class="material-icons md-arrow_back"></i> Go back </a>
+      </div>
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Category Offers</h2>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+                {% if category_offer_id %}
+                <form action="{% url "offer_app:category_offer_update" category_offer_id %}" method="POST">
+                  {% csrf_token %}
+                  {{ form.as_p }}
+                  <center>
+                    <button class="btn-secondary border-0 py-1 px-3 rounded mt-2" type="submit">Update</button>
+                  </center>
+                </form>
+                {% else %}
+                <form action="{% url "offer_app:category_offer_create" %}" method="POST">
+                  {% csrf_token %}
+                  {{ form.as_p }}
+                  <center>
+                    <button class="btn-secondary border-0 py-1 px-3 rounded mt-2" type="submit">Save</button>
+                  </center>
+                </form>
+                {% endif %}
+            </div>
+            <div class="col-md-9">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Offer name</th>
+                      <th>Category name</th>
+                      <th>Dicount Per</th>
+                      <th>Expiry date</th>
+                      <th>Status</th>
+                      <th class="text-end">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for categoryoffer in categoryoffers %}
+                      <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{categoryoffer.offer_name}}</td>
+                        <td>{{categoryoffer.category_offer }}</td>
+                        <td>{{categoryoffer.discount_percentage}} %</td>
+                        <td>{{categoryoffer.offer_expire_date}}</td>
+                        <td><form action="#" method="POST">
+                          {% csrf_token %}
+                          <button type="submit" class="badge rounded-pill alert-success border-0">
+                            {% if categoryoffer.is_active %}
+                              Active
+                            {% else %}
+                              Inactive
+                            {% endif %}
+                          </button>
+                        </form></td>
+                        <td class="text-end">
+                          <div class="dropdown">
+                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"><i class="material-icons md-more_horiz"></i></a>
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="{% url "offer_app:category_offer_update" pk=categoryoffer.id %}">Edit info</a>
+                              <a class=" delete dropdown-item text-danger delete-variant-btn" href="{% url "offer_app:category_offer_Delete" pk=categoryoffer.id %}" data-offer-id="{{categoryoffer.offer_name}}">Delete</a>
+                            </div>
+                          </div> <!-- dropdown //end -->
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div> <!-- .col// -->
+          </div> <!-- .row // -->
+        </div> <!-- card body .// -->
+      </div>
+    </section> <!-- content-main end// -->
+    <footer class="main-footer font-xs">
+      <div class="row pb-30 pt-15">
+        <div class="col-sm-6">
+          <script>
+            document.write(new Date().getFullYear())
+          </script>©, Evara - HTML Ecommerce Template .
+        </div>
+        <div class="col-sm-6">
+          <div class="text-sm-end">All rights reserved</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.delete-variant-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (event) {
+          event.preventDefault()
+    
+          const deleteUrl = event.currentTarget.getAttribute('href')
+          const categoryName = event.currentTarget.getAttribute('data-offer-id')
+    
+          // Display SweetAlert confirmation dialog
+          Swal.fire({
+            title: 'Are you sure?',
+            text: `You want to delete ${categoryName}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Delete'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // If confirmed, proceed with the delete action
+              window.location.href = deleteUrl
+            }
+          })
+        })
+      })
+    })
+  </script>
+{% endblock %}

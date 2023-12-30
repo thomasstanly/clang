@@ -9,8 +9,6 @@
           <h2 class="content-title card-title">Products List</h2>
         </div>
         <div>
-          <a href="#" class="btn btn-light rounded font-md">Export</a>
-          <a href="#" class="btn btn-light rounded font-md">Import</a>
           <a href="{% url 'product_app:add_product' %}" class="btn btn-primary btn-sm rounded">New product</a>
         </div>
       </div>
@@ -18,18 +16,11 @@
         <header class="card-header">
           <div class="row">
             <div class="col-lg-6 col-md-6 me-auto">
-              <form class="d-flex" action="#" method="POST">
+              <form class="d-flex" action="{% url "product_app:search" %}" method="GET">
                 {% csrf_token %}
                 <input name="search" class="bg-dark text-light rounded w-100" type="text" placeholder="Search..." class="form-control" />
                 <button type="submit" class="btn btn-secondary ms-2">Search</button>
               </form>
-            </div>
-            <div class="col-lg-2 col-6 col-md-3">
-              <select class="form-select">
-                <option>Show 20</option>
-                <option>Show 30</option>
-                <option>Show 40</option>
-              </select>
             </div>
           </div>
         </header> <!-- card-header end// -->
@@ -72,36 +63,33 @@
                   <a href="{% url 'product_app:product_edit' id=product.id %}" class="btn btn-sm font-sm rounded btn-brand"><i class="material-icons md-edit"></i> Edit</a>
                   <a href="{% url 'product_app:delete_product' slug=product.product_slug %}" class="delete-variant-btn btn btn-sm font-sm btn-light rounded" data-category-name="{{ product.product_name }}"><i class="material-icons md-delete_forever"></i> Delete</a>
                 </div>
-              </div> <!-- row .// -->
-            </article> <!-- itemlist .// -->
+              </div>
+            </article> 
           {% endfor %}
-        </div> <!-- card-body end// -->
-      </div> <!-- card end// -->
-      {% comment %} <div class="pagination-area mt-30 mb-50">
+        </div> 
+      </div>
+      <div class="pagination-area mt-30 mb-50">
         <nav aria-label="Page navigation example">
           <ul class="pagination justify-content-start">
-            <li class="page-item active">
-              <a class="page-link" href="#">01</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">02</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">03</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link dot" href="#">...</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">16</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-            </li>
+            {% if products.has_previous %}
+              <li class="page-item">
+                  <a class="page-link" href="?{% if request.GET.search %}search={{request.GET.search}}&{% endif %}page=1">&laquo;</a>
+              </li>
+            {% endif %}
+            {% for page_num in products.paginator.page_range %}
+              <li class="page-item {% if page_num == product.number %}active{% endif %}">
+                  <a class="page-link" href="?{% if request.GET.search %}search={{request.GET.search}}&{% endif %}page={{ page_num }}">{{ page_num }}</a>
+              </li>
+            {% endfor %}
+            {% if products.has_next %}
+              <li class="page-item">
+                  <a class="page-link" href="?{% if request.GET.search %}search={{request.GET.search}}&{% endif %}page={{ products.paginator.num_pages }}">&raquo;</a>
+              </li>
+            {% endif %}
           </ul>
         </nav>
-      </div> {% endcomment %}
-    </section> <!-- content-main end// -->
+      </div>
+    </section>
   </main>
   <script>
     document.addEventListener('DOMContentLoaded', function () {

@@ -56,17 +56,15 @@
             <span class="text">Orders</span>
           </a>
         </li>
-        <li class="menu-item ">
-          <a class="menu-link" href="{% url "banner_app:banner" %}">
-            <i class="icon material-icons md-monetization_on"></i>
-            <span class="text">Banner</span>
+        <li class="menu-item has-submenu">
+          <a class="menu-link" href="{% url "offer_app:category_offer" %}">
+            <i class="icon material-icons md-shopping_bag"></i>
+            <span class="text">Offers</span>
           </a>
-        </li>
-        <li class="menu-item">
-          <a class="menu-link" href="#">
-            <i class="icon material-icons md-comment"></i>
-            <span class="text">Reviews</span>
-          </a>
+          <div class="submenu">
+            <a href="{% url "offer_app:category_offer" %}">Category Offer</a>
+            <a href="{% url "offer_app:brand_offer" %}">Brand Offer</a>
+          </div> 
         </li>
         <li class="menu-item">
           <a class="menu-link" href="{% url "coupon_app:coupon" %}">
@@ -87,27 +85,6 @@
           </a>
         </li>
       </ul>
-      <hr />
-      <ul class="menu-aside">
-        <li class="menu-item has-submenu">
-          <a class="menu-link" href="#">
-            <i class="icon material-icons md-settings"></i>
-            <span class="text">Settings</span>
-          </a>
-          <div class="submenu">
-            <a href="page-settings-1.html">Setting sample 1</a>
-            <a href="page-settings-2.html">Setting sample 2</a>
-          </div>
-        </li>
-        <li class="menu-item">
-          <a class="menu-link" href="page-blank.html">
-            <i class="icon material-icons md-local_offer"></i>
-            <span class="text">Starter page</span>
-          </a>
-        </li>
-      </ul>
-      <br />
-      <br />
     </nav>
   </aside>
     {% block content %}
@@ -142,7 +119,7 @@
       const pId = $(this).attr('data-item')
       $.ajax({
         type: "POST",
-        url: updateCartUrl, 
+        url: updateCartUrl,
         data: {
             status: status,
             id: pId,

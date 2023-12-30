@@ -4,6 +4,7 @@ from django.views.decorators.cache import cache_control
 from django.db.models import Q
 from .forms import brand_form,attribute_form, attribute_value_form, product_form, Product_varient_form, product_image
 from .models import Brand, attribute, attribute_values, Product, Product_varient
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 # --------------------------BRAND----------------------
@@ -142,7 +143,19 @@ def attribute_value_status(request,id):
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)
 def product(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        products = Product.objects.all().order_by('-created_at')
+        products_details = Product.objects.all().order_by('-created_at')
+
+        row = 3
+        paginator = Paginator(products_details,row)
+        page = request.GET.get('page')
+
+        try:
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)
+
         context = {
             'products' : products
         }
@@ -151,6 +164,41 @@ def product(request):
     else:
         return redirect('admin_app:admin_login')
     
+def search(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        query = request.GET.get('search')
+
+        if query == 'active':
+            query = True;
+        if query == 'inactive':
+            query = False;
+        
+        if query:
+            product_details = Product.objects.filter(
+                Q(category_id__category_title__icontains=query) | 
+                Q(product_brand__Brand_name__icontains=query)|
+                 Q(is_active__icontains=query)).order_by('-created_at')
+            
+            row = 3
+            paginator = Paginator(product_details,row)
+            page = request.GET.get('page')
+
+            try:
+                products = paginator.page(page)
+            except PageNotAnInteger:
+                products = paginator.page(1)
+            except EmptyPage:
+                products = paginator.page(paginator.num_pages)
+
+            context = {
+            'products' : products
+            }
+            return render(request,'cus_admin/page-products-list.html',context)
+        else:
+            return redirect('product_app:product')
+    else:
+        return redirect('admin_app:admin_login')
+
 def add_product(request):
     if request.user.is_authenticated and request.user.is_superuser:
         form = product_form()

@@ -12,26 +12,15 @@
       </div>
       <div class="card mb-4">
         <header class="card-header">
-          <div class="row gx-3">
-            <div class="col-lg-4 col-md-6 me-auto">
-              <input type="text" placeholder="Search..." class="form-control" />
+          <div class="row">
+            <div class="col-lg-6 col-md-6 me-auto">
+              <form class="d-flex" action="{% url 'customer_app:search' %}" method="GET">
+                {% csrf_token %}
+                <input name="search" class="bg-dark text-light rounded w-100" type="text" placeholder="Search..." class="form-control" />
+                <button type="submit" class="btn btn-secondary ms-2">Search</button>
+              </form>
             </div>
-            <div class="col-lg-2 col-md-3 col-6">
-              <select class="form-select">
-                <option>Status</option>
-                <option>Active</option>
-                <option>Disabled</option>
-                <option>Show all</option>
-              </select>
-            </div>
-            <div class="col-lg-2 col-md-3 col-6">
-              <select class="form-select">
-                <option>Show 20</option>
-                <option>Show 30</option>
-                <option>Show 40</option>
-              </select>
-            </div>
-          </div>
+          </div>  
         </header> <!-- card-header end// -->
         <div class="card-body">
           <div class="table-responsive">
@@ -51,7 +40,7 @@
                     <td width="40%">
                       <a href="#" class="itemside">
                         <div class="info pl-3">
-                          <h6 class="mb-0 title">{{customer.user_name}}</h6>
+                          <h6 class="mb-0 title">{{customer.username}}</h6>
                           <small class="text-muted">Customer ID: {{customer.id}}</small>
                         </div>
                       </a>
@@ -73,27 +62,24 @@
           </div>
         </div> <!-- card-body end// -->
       </div> <!-- card end// -->
-      <div class="pagination-area mt-15 mb-50">
+      <div class="pagination-area mt-30 mb-50">
         <nav aria-label="Page navigation example">
           <ul class="pagination justify-content-start">
-            <li class="page-item active">
-              <a class="page-link" href="#">01</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">02</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">03</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link dot" href="#">...</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">16</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-            </li>
+            {% if customer_detials.has_previous %}
+              <li class="page-item">
+                  <a class="page-link" href="?{% if request.GET.search %}search={{request.GET.search}}&{% endif %}page=1">&laquo;</a>
+              </li>
+            {% endif %}
+            {% for page_num in customer_detials.paginator.page_range %}
+              <li class="page-item {% if page_num == customer_detials.number %}active{% endif %}">
+                  <a class="page-link" href="?{% if request.GET.search %}search={{request.GET.search}}&{% endif %}page={{ page_num }}">{{ page_num }}</a>
+              </li>
+            {% endfor %}
+            {% if customer_detials.has_next %}
+              <li class="page-item">
+                  <a class="page-link" href="?{% if request.GET.search %}search={{request.GET.search}}&{% endif %}page={{ customer_detials.paginator.num_pages }}">&raquo;</a>
+              </li>
+            {% endif %}
           </ul>
         </nav>
       </div>

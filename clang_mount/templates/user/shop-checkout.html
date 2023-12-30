@@ -296,10 +296,9 @@
         success: function (data) {
           if (data.success) {
             console.log('success')
-            //document.getElementById('grand_total').value = data.grand_total
+  
             document.getElementById('grand_total_view').innerHTML ='₹'+data.grand_total
-            document.getElementById('wallet').innerHTML ='<span>Wallet :&ensp;₹&ensp;</span>' + data.balance 
-            //document.getElementById('wallet_total').value = data.balance 
+            document.getElementById('wallet').innerHTML ='<span>Wallet :&ensp;₹&ensp;</span>' + data.balance
           } else {
              console.error('not success')
           }

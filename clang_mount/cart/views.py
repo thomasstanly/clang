@@ -38,13 +38,13 @@ def cart_list(request):
         }
         return render(request,'user/page-cart.html',context)
     elif 'cart' in request.session:
-
         cart_dict = request.session.get('cart', {})
         variant_slug = list(cart_dict.keys())
         products = Product_varient.objects.select_related('product_name').filter(varient_slug__in=variant_slug)
+        
         sub_total = sum(product.price * cart_dict[product.varient_slug] for product in products)
-        dis_total = sum((product.price*product.discount_percentage)/100 * cart_dict[product.varient_slug]  for product in products)
-        total = sub_total-dis_total
+        dis_total = sum((product.price*product.percetange())/100 * cart_dict[product.varient_slug]  for product in products)
+        total = sub_total-dis_total 
         context = {
             'items' : [{'product': product, 'quantity':cart_dict[product.varient_slug]} for product in products],
             'sub_total': sub_total,
@@ -243,7 +243,7 @@ def checkout(request):
                         grand_total = grand_total - balance
                         balance = 0
                     return JsonResponse({'success':True,'grand_total':grand_total,'balance':balance})
-                else:
+                else: 
                     return JsonResponse({'success':True,'grand_total':grand_total,'balance':balance})
         except:
             pass

@@ -5,9 +5,11 @@
     {% include 'cus_admin/header.html' %}
     <section class="content-main">
       <div class="content-header">
+        <a href="javascript:history.back()"><i class="material-icons md-arrow_back"></i> Go back </a>
+      </div>
+      <div class="content-header">
         <div>
           <h2 class="content-title card-title">Sales Report</h2>
-         
         </div>
         <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -21,7 +23,7 @@
       </div>
       <div class="card mb-4">
         <header class="card-header">
-          <div class="row">
+          <div class="row justify-content-between align-items-end">
         
             <div class="col-lg-3 col-md-3 ">
               <div class="dropdown">
@@ -29,12 +31,32 @@
                   sales report
                 </button>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">weekly report</a></li>
-                  <li><a class="dropdown-item" href="{% url "sales_app:monthly" %}">monthly report</a></li>
-                  <li><a class="dropdown-item" href="#">yearly report</a></li>
+                  <li><a class="dropdown-item" href="{% url "sales_app:sales_report_details" 'daily' %}">daily report</a></li>
+                  <li><a class="dropdown-item" href="{% url "sales_app:sales_report_details" 'weekly' %}">weekly report</a></li>
+                  <li><a class="dropdown-item" href="{% url "sales_app:sales_report_details" 'monthly' %}">monthly report</a></li>
+                  <li><a class="dropdown-item" href="{% url "sales_app:sales_report_details" 'yearly' %}">yearly report</a></li>
                 </ul>
               </div>
             </div>
+
+            <div class="col-lg-6 col-md-4 ">
+              <form action="{% url "sales_app:sales_report_range" %}" method="GET">
+                <div class="row justify-content-end align-items-end">
+                  <div class="col-lg-4">
+                    <label for="from-date">From :</label>
+                    <input name="from_date" value="{{request.GET.from_date}}" id="from-date" class="form-control border" type="date">
+                  </div>
+                  <div class="col-lg-4">
+                    <label for="to-date">To:</label>
+                    <input name="to_date" value="{{request.GET.to_date}}" id="to-date" class="form-control border" type="date">
+                  </div>
+                  <div class="col-lg-2">
+                    <button class="mt-3 btn bg-secondary text-light " type="submit">Submit</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
           </div>
         </header> <!-- card-header end// -->
         <div class="card-body">
@@ -49,11 +71,10 @@
                   <th scope="col">Quantity</th>
                   <th scope="col">Price</th>
                   <th scope="col">Payment Method</th>
-                  <th scope="col">Order Status</th>
                 </tr>
               </thead>
-              <tbody>
-                {% for product in order_product %}
+              <tbody id="table">
+                {% for product in order_product_page  %}
                   <tr>
                     <td>{{ product.order.order_no }}</td>
                     <td>{{ product.created_at }}</td>
@@ -62,14 +83,35 @@
                     <td>{{ product.quantity }}</td>
                     <td>₹ {{ product.product_price }}</td>                    
                     <td>{{ product.order.payment.payment_method }}</td>
-                    <td>{{ product.order.status }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
             </table>
-          </div> <!-- table-responsive //end -->
-        </div> <!-- card-body end// -->
-      </div> <!-- card end// -->
+          </div>
+        </div>
+      </div>
+      <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-start">
+            {% if order_product_page.has_previous %}
+              <li class="page-item">
+                  <a class="page-link" href="?{% if request.GET.from_date and request.GET.to_date %}from_date={{request.GET.from_date }}&to_date={{request.GET.to_date }}&{% endif %}page=1">&laquo;</a>
+              </li>
+            {% endif %}
+            {% for page_num in order_product_page.paginator.page_range %}
+              <li class="page-item {% if page_num == order_product_page.number %}active{% endif %}">
+                  <a class="page-link" href="?{% if request.GET.from_date and request.GET.to_date %}from_date={{request.GET.from_date }}&to_date={{request.GET.to_date }}&{% endif %}page={{ page_num }}">{{ page_num }}</a>
+              </li>
+            {% endfor %}
+            {% if order_product_page.has_next %}
+              <li class="page-item">
+                  <a class="page-link" href="?{% if request.GET.from_date and request.GET.to_date %}from_date={{request.GET.from_date }}&to_date={{request.GET.to_date }}&{% endif %}page={{ order_product_page.paginator.num_pages }}">&raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </div>
     </section> <!-- content-main end// -->
     <footer class="main-footer font-xs">
       <div class="row pb-30 pt-15">
@@ -84,4 +126,74 @@
       </div>
     </footer>
   </main>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  {% comment %} <script>
+   $(document).ready(function () {
+    $("#from-date, #to-date").change(function () {
+        var fromDate = $("#from-date").val();
+        var toDate = $("#to-date").val();
+        console.log(fromDate, toDate);
+
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'sales_app:sales_report_range' %}",
+            data: {
+              from_date: fromDate,
+              to_date: toDate,
+              action: 'GET',
+            },
+            success: function (data) {
+                console.log("Backend response:", data);
+                orderProducts = data.order_product;
+                var paginator = data.paginator;
+
+                // Clear the existing table content and pagination
+                $("#table").empty();
+                $(".pagination").empty();
+
+                // Iterate over the orderProducts and append rows to the table
+                orderProducts.forEach(function (product) {
+                    // Access the fields in each product and create the table row
+                    $("#table").append(`
+                        <tr>
+                            <td>${product.order_id}</td>
+                            <td>${product.created_at}</td>
+                            <td><b>${product.firstname}</b></td>
+                            <td>${product.product}</td>
+                            <td>${product.quantity}</td>
+                            <td>₹ ${product.price}</td>
+                            <td>${product.payment_method}</td>
+                        </tr>
+                    `);
+                });
+
+                // Update pagination
+                updatePagination(paginator);
+            },
+            error: function (error) {
+                // Handle the error
+                console.error("Error:", error);
+            }
+        });
+    });
+  });  
+
+function updatePagination(paginator) {
+    // Update pagination links
+    $(".pagination").append(`<li class="page-item ${paginator.has_previous ? '' : 'disabled'}">
+                                <a class="page-link" href="?from_date=${paginator.from_date}&to_date=${paginator.to_date}&page=1">&laquo;</a>
+                            </li>`);
+
+    for (var page_num = 1; page_num <= paginator.num_pages; page_num++) {
+        $(".pagination").append(`<li class="page-item ${page_num === paginator.number ? 'active' : ''}">
+                                    <a class="page-link" href="?from_date=${paginator.from_date}&to_date=${paginator.to_date}&page=${page_num}">${page_num}</a>
+                                </li>`);
+    }
+                  
+    $(".pagination").append(`<li class="page-item ${paginator.has_next ? '' : 'disabled'}">
+                                <a class="page-link" href="?from_date=${paginator.from_date}&to_date=${paginator.to_date}&page=${paginator.num_pages}" onclick="range()">&raquo;</a>
+                            </li>`);
+}
+
+  </script> {% endcomment %}
 {% endblock %}

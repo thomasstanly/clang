@@ -95,14 +95,7 @@
                           <div class="info">{{ product.product.product_name }}</div>
                         </td>
                         <td class="align-middle text-center">
-                          {% comment %}<form method="post" action="{% url 'admin_app:order_status' %}">
-                             {% csrf_token %}
-                            {{ formset.management_form }}
-                            {% for form in formset %}
-                            <input type="hidden" name="{{ form.ORDER_PRODUCT_FIELD_NAME }}" value="{{ product.id }}">
-                              {{ form.status }}
-                            {% endfor %}
-                            <button  type="submit">Save</button> {% endcomment %}
+                         
                             <select name="status" id="product_status" class="btn-outline-secondary rounded-3 py-1 fs-6" data-item="{{product.id }}">
                               <option value="PROCESSING" {% if product.status == 'PROCESSING' %} selected {% endif %}>Processing</option>
                               <option value="DISPATCHED" {% if product.status == 'DISPATCHED' %} selected {% endif %}>Dispatched</option>
