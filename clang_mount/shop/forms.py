@@ -1,10 +1,9 @@
 from typing import Any
 from django import forms
-from django.core.validators import MinValueValidator
 
 class PriceRangeFilterForm(forms.Form):
-    min_price = forms.IntegerField(label='Min Price', required=False,validators=[MinValueValidator(500, message='Min value is 500')])
-    max_price = forms.IntegerField(label='Max Price', required=False)
+    min_price = forms.IntegerField(label='Min Price', required=False,widget=forms.NumberInput(attrs={'value':100}))
+    max_price = forms.IntegerField(label='Max Price', required=False,widget=forms.NumberInput(attrs={'value':3000}))
 
     def clean(self):
         cleaned_data = super().clean()
@@ -14,8 +13,10 @@ class PriceRangeFilterForm(forms.Form):
 
         if min_price is not None and max_price is not None:
             if min_price > max_price:
-               raise forms.ValidationError('Min Price must be less than or equal to Max Price', code='min_max_relation')
+               raise forms.ValidationError('Min Price must be less than or equal to Max Price')
+            if min_price < 100:
+                raise forms.ValidationError("Min value is 100")
         else:
-           raise forms.ValidationError('Please enter a value in both fields', code='empty_fields')
+            raise forms.ValidationError("dasds")
 
         return cleaned_data

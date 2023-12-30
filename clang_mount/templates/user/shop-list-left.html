@@ -1,15 +1,10 @@
 ﻿{% extends 'user/base.html' %}
 {% load static %}
+{% block title %}
+  Clang Mount
+{% endblock %}
 {% block content %}
   <main class="main">
-    {% comment %} <div class="page-header breadcrumb-wrap">
-      <div class="container">
-        <div class="breadcrumb">
-          <a href="index.html" rel="nofollow">Home</a>
-          <span></span> Shop
-        </div>
-      </div>
-    </div> {% endcomment %}
     <section class="mt-50 mb-50">
       <div class="container">
         <div class="row flex-row-reverse">
@@ -65,18 +60,26 @@
             </div>
             <!-- Fillter By Price -->
             <div class="sidebar-widget price_range range mb-30">
+              <h5 class="section-title style-1 mb-30 wow fadeIn animated">Filter by</h5>
               <form action="{% url "shop_app:home" %}" method="GET">
                 <div class="row">
                   <div class="col-lg-6">
                     {{ form.min_price.label_tag }}
                     {{ form.min_price }}
-                    {{ form.min_price.errors }}
+                    {{ form.min_price.error }}
                   </div>
                   <div class="col-lg-6">
                     {{ form.max_price.label_tag }}
                     {{ form.max_price }}
-                    {{ form.max_price.errors }}
+                    {{ form.max_price.error }}
                   </div>
+                  {% if form.errors %}
+                    <ul class="errorlist">
+                      {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
                 </div>
                 <div class="row mt-10 mx-1">
                   <button type="submit" class="btn btn-sm btn-default"><i class="fi-rs-filter mr-5"></i> Fillter</button>

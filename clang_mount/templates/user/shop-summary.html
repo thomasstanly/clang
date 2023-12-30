@@ -1,5 +1,8 @@
 {% extends 'user/base.html' %}
 {% load static %}
+{% block title %}
+Order Summary
+{% endblock %}
 {% block content %}
   <main>
     <div class="container w-75">
@@ -26,7 +29,7 @@
                 </th>
                 <td class="text-center">{{ item.product.product_name }}</td>
                 <td class="text-center">₹ {{ item.product.price }}</td>
-                <td class="text-center">{{ item.product.discount_percentage }} %</td>
+                <td class="text-center">{{ item.product.percetage }} %</td>
                 <td class="text-center">{{ item.quantity }}</td>
                 <td class="text-end" style="padding-right: 2vw;">₹ {{ item.total_price }}</td>
               </tr>

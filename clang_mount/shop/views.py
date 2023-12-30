@@ -160,18 +160,22 @@ def home(request):
         if request.user.is_superuser:
             return redirect('admin_app:admin_login')
         products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True)
-
+        
         if request.method == 'GET':
             form = PriceRangeFilterForm(request.GET)
             if form.is_valid():
                 min_price = form.cleaned_data.get('min_price')
                 max_price = form.cleaned_data.get('max_price')
-                print(min_price)
-                print(max_price)
-                print('hi')
+                categories = Categories.objects.all()
+                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True).filter(price__gte=min_price, price__lte=max_price)
+                context = {
+                'products' : products,
+                'categories': categories,
+                'form': form,
+                }
+                return render(request,'user/shop-list-left.html',context)
         else:
             form = PriceRangeFilterForm()
-        print('hello')
         categories = Categories.objects.all()
         context = {
             'products' : products,
@@ -182,9 +186,25 @@ def home(request):
     else:
         products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True)
         categories = Categories.objects.all()
+
+        if request.method == 'GET':
+            form = PriceRangeFilterForm(request.GET)
+            if form.is_valid():
+                min_price = form.cleaned_data.get('min_price')
+                max_price = form.cleaned_data.get('max_price')
+                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True,after_discount__range=[min_price,max_price])
+                context = {
+                'products' : products,
+                'categories': categories,
+                'form': form,
+                }
+                return render(request,'user/shop-list-left.html',context)
+        else:
+            form = PriceRangeFilterForm()
         context = {
             'products' : products,
-            'categories': categories
+            'categories': categories,
+            'form': form,
         }
         return render(request,'user/shop-list-left.html',context)
 

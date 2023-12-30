@@ -1,8 +1,12 @@
 {% extends 'cus_admin/base.html' %}
 {% load static %}
+{% block title %}Edit Category{% endblock title %}
 {% block content %}
   <main class="main-wrap">
     {% include 'cus_admin/header.html' %}
+    <div class="content-header">
+      <a href="javascript:history.back()"><i class="material-icons md-arrow_back"></i> Go back </a>
+  </div>
     <form action="{% url "category_app:edit_categories" id=category.id %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <section class="content-main">

@@ -1,9 +1,13 @@
 {% extends 'cus_admin/base.html' %}
 {% load static %}
+{% block title %}Create variant {% endblock %}
 {% block content %}
   <main class="main-wrap">
     {% include 'cus_admin/header.html' %}
     <section class="content-main">
+      <div class="content-header">
+        <a href="javascript:history.back()"><i class="material-icons md-arrow_back"></i> Go back</a>
+      </div>
       <form action="{% url "product_app:variant_add" slug=product.product_slug %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row justify-content-center">

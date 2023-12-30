@@ -1,5 +1,8 @@
 {% extends 'user/base.html' %}
 {% load static %}
+{% block title %}
+  Order Details
+{% endblock %}
 {% block content %}
   <main class="main">
     <section class="mt-50 mb-50">
@@ -42,7 +45,7 @@
                         <p class="mb-0" style="font-weight: 500;">₹ {{ product.product.price }}</p>
                       </td>
                       <td class="align-middle text-center">
-                        <p class="mb-0" style="font-weight: 500;">{{ product.product.discount_percentage}} %</p>
+                        <p class="mb-0" style="font-weight: 500;">{{ product.product.percetage}} %</p>
                       </td>
                       <td class="align-middle text-center">
                         <p class="mb-0" style="font-weight: 500;">{{ product.quantity }} </p>
