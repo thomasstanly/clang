@@ -17,21 +17,29 @@ def index(request):
             return redirect('admin_app:admin_login')
     
         category = Categories.objects.all()
-        brand = Brand.objects.all()
-
+        brands = Brand.objects.all()
+        jbl = Brand.objects.get(Brand_name="JBL")
+        sony = Brand.objects.get(Brand_name="Sony")
+        
         context = {
             'categories' : category,
-            'Brands' : brand
+            'Brands' : brands,
+            'jbl': jbl,
+            'sony': sony
         }
 
         return render(request,'user/index.html',context)
     else:
         category = Categories.objects.all()
-        brand = Brand.objects.all()
-
+        brands = Brand.objects.all()
+        jbl = Brand.objects.get(Brand_name="JBL")
+        sony = Brand.objects.get(Brand_name="Sony")
+        
         context = {
             'categories' : category,
-            'Brands' : brand
+            'Brands' : brands,
+            'jbl': jbl,
+            'sony': sony
         }
 
         return render(request,'user/index.html',context)
@@ -74,10 +82,28 @@ def search_product(request):
         
         count = products.count()
 
+        if request.method == 'GET':
+            form = PriceRangeFilterForm(request.GET)
+            if form.is_valid():
+                min_price = form.cleaned_data.get('min_price')
+                max_price = form.cleaned_data.get('max_price')
+                categories = Categories.objects.all()
+                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True).filter(price__gte=min_price, price__lte=max_price)
+                context = {
+                'products' : products,
+                'categories': categories,
+                 'count_product':count,
+                'form': form,
+                }
+                return render(request,'user/shop-list-left.html',context)
+        else:
+            form = PriceRangeFilterForm()
+
         context = {
             'products': products,
             'categories':categories,
             'count_product':count,
+            'form': form,
         }
         return render(request, 'user/shop-list-left.html', context)
     else:
@@ -98,10 +124,28 @@ def search_product(request):
         
         count = products.count()
 
+        if request.method == 'GET':
+            form = PriceRangeFilterForm(request.GET)
+            if form.is_valid():
+                min_price = form.cleaned_data.get('min_price')
+                max_price = form.cleaned_data.get('max_price')
+                categories = Categories.objects.all()
+                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True).filter(price__gte=min_price, price__lte=max_price)
+                context = {
+                'products' : products,
+                'categories': categories,
+                 'count_product':count,
+                'form': form,
+                }
+                return render(request,'user/shop-list-left.html',context)
+        else:
+            form = PriceRangeFilterForm()
+
         context = {
             'products': products,
             'categories':categories,
             'count_product':count,
+            'form': form,
         }
         return render(request, 'user/shop-list-left.html', context)
 
@@ -112,18 +156,52 @@ def category_products(request, id):
         products = Product_varient.objects.filter(product_name__category_id__id=id).filter(vari_is_active=True)
         categories = Categories.objects.all()
 
+        if request.method == 'GET':
+            form = PriceRangeFilterForm(request.GET)
+            if form.is_valid():
+                min_price = form.cleaned_data.get('min_price')
+                max_price = form.cleaned_data.get('max_price')
+                categories = Categories.objects.all()
+                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True).filter(price__gte=min_price, price__lte=max_price)
+                context = {
+                'products' : products,
+                'categories': categories,
+                'form': form,
+                }
+                return render(request,'user/shop-list-left.html',context)
+        else:
+            form = PriceRangeFilterForm()
+
         context = {
             'products': products,
             'categories':categories,
+            'form': form,
         }
         return render(request, 'user/shop-list-left.html', context)
     else:
         products = Product_varient.objects.filter(product_name__category_id__id=id).filter(vari_is_active=True)
         categories = Categories.objects.all()
 
+        if request.method == 'GET':
+            form = PriceRangeFilterForm(request.GET)
+            if form.is_valid():
+                min_price = form.cleaned_data.get('min_price')
+                max_price = form.cleaned_data.get('max_price')
+                categories = Categories.objects.all()
+                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True).filter(price__gte=min_price, price__lte=max_price)
+                context = {
+                'products' : products,
+                'categories': categories,
+                'form': form,
+                }
+                return render(request,'user/shop-list-left.html',context)
+        else:
+            form = PriceRangeFilterForm()
+
         context = {
             'products': products,
             'categories':categories,
+            'form': form,
         }
 
         return render(request, 'user/shop-list-left.html', context)
@@ -133,21 +211,55 @@ def brand_products(request, id):
         if request.user.is_superuser:
             return redirect('admin_app:admin_login')
         products = Product_varient.objects.filter(product_name__product_brand__id=id).filter(vari_is_active=True)
-        categories = Categories.objects.all()
 
+        if request.method == 'GET':
+            form = PriceRangeFilterForm(request.GET)
+            if form.is_valid():
+                min_price = form.cleaned_data.get('min_price')
+                max_price = form.cleaned_data.get('max_price')
+                categories = Categories.objects.all()
+                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True).filter(price__gte=min_price, price__lte=max_price)
+                context = {
+                'products' : products,
+                'categories': categories,
+                'form': form,
+                }
+                return render(request,'user/shop-list-left.html',context)
+        else:
+            form = PriceRangeFilterForm()
+
+        categories = Categories.objects.all()
         context = {
-            'products': products,
-            'categories':categories,
+            'products' : products,
+            'categories': categories,
+            'form': form,
         }
 
         return render(request, 'user/shop-list-left.html', context)
      else:
         products = Product_varient.objects.filter(product_name__product_brand__id=id).filter(vari_is_active=True)
-        categories = Categories.objects.all()
 
+        if request.method == 'GET':
+            form = PriceRangeFilterForm(request.GET)
+            if form.is_valid():
+                min_price = form.cleaned_data.get('min_price')
+                max_price = form.cleaned_data.get('max_price')
+                categories = Categories.objects.all()
+                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True).filter(price__gte=min_price, price__lte=max_price)
+                context = {
+                'products' : products,
+                'categories': categories,
+                'form': form,
+                }
+                return render(request,'user/shop-list-left.html',context)
+        else:
+            form = PriceRangeFilterForm()
+
+        categories = Categories.objects.all()
         context = {
-            'products': products,
-            'categories':categories,
+            'products' : products,
+            'categories': categories,
+            'form': form,
         }
 
         return render(request, 'user/shop-list-left.html', context)
@@ -192,7 +304,8 @@ def home(request):
             if form.is_valid():
                 min_price = form.cleaned_data.get('min_price')
                 max_price = form.cleaned_data.get('max_price')
-                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True,after_discount__range=[min_price,max_price])
+                products = Product_varient.objects.select_related('product_name').filter(vari_is_active=True).filter(price__gte=min_price, price__lte=max_price)
+
                 context = {
                 'products' : products,
                 'categories': categories,

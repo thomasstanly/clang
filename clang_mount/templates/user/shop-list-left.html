@@ -17,7 +17,7 @@
               </div>
             </div>
             {% for product in products %}
-              <div class="product-list mb-50">
+              <div class="product-list mb-50 border ">
                 <div class="product-cart-wrap">
                   <div class="product-img-action-wrap">
                     <div class="product-img product-img-zoom">
@@ -26,7 +26,7 @@
                       </div>
                     </div>
                     <div class="product-badges product-badges-position product-badges-mrg">
-                      <span class="hot">Hot</span>
+                      <span class="hot">{{ product.percetage }} %</span>
                     </div>
                   </div>
                   <div class="product-content-wrap">
@@ -38,7 +38,7 @@
                       <span>₹{{ product.after_discount }}</span>
                       <span class="old-price">₹{{ product.price }}</span>
                     </div>
-                    <p class="mt-15">{{ product.description }}</p>
+                    <p class="mt-15">{{ product.product_name.description }}</p>
                     <div class="product-action-1 show">
                       <a aria-label="Buy now" class="action-btn" href="{% url 'cart_app:add_to_cart' slug=product.varient_slug %}"><i class="fi-rs-shopping-bag-add"></i>Add to Cart</a>
                     </div>
