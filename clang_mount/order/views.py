@@ -110,10 +110,6 @@ def order_payment(request):
                     order_details.grand_total = 0
                     order_details.save()
 
-            print(order_details.grand_total)
-            print(order_details.wallet_amount)
-            print(wallet.balance)
-
             return redirect('order_app:online_payment')
         else:
             return redirect('cart_app:checkout')
@@ -169,6 +165,7 @@ def payment_success(request):
     try:
          order = Order.objects.get(user=request.user,is_ordered=False,order_no=order_id)
          grand_total = order.wallet_amount + order.grand_total
+    
     except Exception:
         messages.error(request,'order not found')
         return redirect('shop_app:index')
@@ -213,9 +210,11 @@ def payment_success(request):
 
     if payment_method == 'COD':
         payment_details = Payment.objects.create(user=request.user,payment_id=payment_id,
-        payment_order_id=payment_order_id,payment_signature=payment_sign,amount_paid=order.grand_total,status='PENDING',payment_method=payment_method)
+        payment_order_id=payment_order_id,payment_signature=payment_sign,amount_paid=grand_total,status='PENDING',payment_method=payment_method)
         payment_details.save()
-
+        if order.grand_total == 0:
+            payment_details.status = 'SUCCESS'
+            payment_details.save()
         wallet = Wallet.objects.get(user=request.user,is_active=True)
         wallet.balance = wallet.balance - order.wallet_amount
         wallet.save()

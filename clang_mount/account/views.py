@@ -148,21 +148,6 @@ def order_details(request,id):
 
         return render(request,'user/page-account-order.html',context)
 
-def cancel_order(request,id):
-    if request.user.is_authenticated:
-        order = Order.objects.get(id=id)  
-        
-        order_items = OrderProduct.objects.filter(order=order)
-        for item in order_items:
-            product = Product_varient.objects.get(id=item.product.id)
-            product.stock += item.quantity
-            product.save()
-    
-        order.status = 'CANCELLED'
-        order.save()
-        messages.info(request,'Order is cancelled')
-    return redirect('account_app:account')
-
 def product_return(request,id):
     if request.user.is_authenticated:
         order_item = OrderProduct.objects.select_related('order').get(id=id)

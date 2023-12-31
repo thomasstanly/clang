@@ -45,7 +45,7 @@
                       <b>{{ order.user.first_name }} {{ order.user.last_name }}</b>
                     </td>
                     <td  class="text-center">{{ order.user }}</td>
-                    <td  class="text-center">{{ order.grand_total }}</td>
+                    <td  class="text-center">{{ order.payment.amount_paid }}</td>
                     <td  class="text-center">
                       <span class="badge rounded-pill alert-warning">{{ order.payment.status }}</span>
                     </td>
